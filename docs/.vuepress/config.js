@@ -10,7 +10,7 @@ module.exports = {
     nav: [
       { text: 'Home', link: '/' },
       { text: 'HTML', link: '/html/' },
-      { text: 'CSS', link: '/css/' },
+      { text: 'CSS', items: [{ text: '布局', link: '/css/layout/' }] },
       { text: 'JS', link: '/js/' },
       { text: 'Git', link: '/git/' },
       {
@@ -31,8 +31,20 @@ module.exports = {
           children: ['/html/测试']
         }
       ],
-      // '/css': ['', 'css'],
-      // '/js': ['', 'js']
+      '/css': [
+        {
+          title: '布局',
+          collapsable: true,
+          children: ['/css/layout/CSS元素居中']
+        }
+      ],
+      '/js': [
+        {
+          title: 'JS',
+          collapsable: true,
+          children: ['/js/模块化']
+        }
+      ]
     },
     sidebarDepth: 2,
     lastUpdated: 'Last Updated',
