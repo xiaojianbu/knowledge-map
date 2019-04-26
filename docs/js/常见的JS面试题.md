@@ -1,0 +1,1572 @@
+# 常见的 JS 面试题
+
+## 来源
+
+[前端笔试面试题题库](https://github.com/jirengu/frontend-interview)
+
+[知识面经汇总](https://github.com/CodingMeUp/some_notes)
+
+## ["1", "2", "3"].map(parseInt)
+
+[从一道坑人的面试题说函数式编程](https://www.h5jun.com/post/parseInt-to-functional.html)
+
+parseInt() 函数能解析一个字符串，并返回一个整数，需要两个参数 (val, radix)，其中 radix 表示要解析的数字的基数。【该值介于 2 ~ 36 之间，并且字符串中的数字不能大于 radix 才能正确返回数字结果值】;
+但此处 map 传了 3 个 (element, index, array),我们重写 parseInt 函数测试一下是否符合上面的规则。
+
+```js
+function parseInt(str, radix) {
+  return str + '-' + radix
+}
+var a = ['1', '2', '3']
+a.map(parseInt) // ["1-0", "2-1", "3-2"] 不能大于 radix
+```
+
+因为二进制里面，没有数字 3,导致出现超范围的 radix 赋值和不合法的进制解析，才会返回 NaN
+所以["1", "2", "3"].map(parseInt) 答案也就是：[1, NaN, NaN]
+
+## 下面这段代码输出结果是？
+
+```js
+var length = 10
+function fn() {
+  console.log(this.length)
+}
+var obj = {
+  length: 5,
+  method: function(fn) {
+    fn()
+    arguments[0]()
+  }
+}
+obj.method(fn)
+obj.method(fn, 123)
+```
+
+对于 this 的理解，常说的一句话是-- 谁调用它 this 就代表谁
+
+对于 method 里面 fn 的理解， fn 是传参传出来的，这里 fn 的执行属于函数调用模式，this 就代表是全局对象 window
+
+对 arguments[0]() 的理解:
+
+arguments 这个伪数组对象存的传入的参数， arguments 也就是可以理解为 [fn,123,345..,...,] ,传入的参数组成数组,arguments[0]() 属于方法调用模式，this 代表调用者，所以 this 代表 arguments ，执行 arguments[0]()也就是 arguments.fn(), this.length 代表 arguments 参数的个数
+
+## 以下代码输出什么? 为什么?
+
+```js
+var a = { n: 1 }
+var b = a
+a = { n: 2 }
+a.x = a
+console.log(a.x)
+console.log(b.x)
+
+var a = { n: 1 }
+var b = a
+a.x = a = { n: 2 }
+console.log(a.x)
+console.log(b.x)
+```
+
+对象是引用类型，改变赋值只是改变指针的引用。运算符=相当于改变指针的指向。
+
+运算符的优先级。. > =。 即：在 a.x = a = {n:2};中，先给对象 a 添加 x 属性，再进行 a={n:2}与 a.x={n:2}两个赋值操作。
+
+```js
+// 变量a 指针指向对象 {n:1}
+var a = { n: 1 }
+
+// 变量b 指针指向对象 {n:1}
+var b = a
+
+// 变量b指针不变，仍指向{n:1}; 变量a指针改为指向对象 {n:2}
+a = { n: 2 }
+
+// 注意运算符的优先级。先给对象 a 增加 x 属性，再给 x 属性赋值。此时 x 属性的值指向 a 对象自身。即：a = {n:2,x:a}
+a.x = a
+
+console.log(a.x) // {n:2,x:a}
+
+// 由于b指针没变，还是指向{n:1} ，故b.x: undefined
+console.log(b.x)
+```
+
+```js
+var a = { n: 1 }
+
+// b与a的指针均指向 {n:1}
+var b = a
+
+// 注意运算符优先级`.` > `=`
+// 先给 a 添加 x 属性。故添加 x 属性后，a 指向的对象{n:1}变为{n:1, x:undefined/待赋值}, 由于 b 是和a指向的同一个对象，所以此时b={n:1, x:undefined/待赋值}
+// 然后再进行赋值操作。a.x = {n:2} ，故x属性的值为{n:2}，此时a=b={n:1,x:{n:2}
+// 继续赋值操作。 a = {n:2}, a的指针由指向{n:1,x:{n:2} 变为指向对象 {n:2}
+// a.x = a = {n:2} 理解
+// js执行连等赋值语句之前，会取出变量的引用，也就是a.x 和a中a的引用都取出来并保存内存中，执行语句 a.x = a = {n:2} 时先对 a 进行a={n:2}赋值，此时a的引用地址改变指向对象{n:2}，从右到左，然后才是是a.x = a 赋值，而a.x 的a 被取出来的引用和b一样（前面说取出来放内存了），所以a.x = a ，相当于改变 b 引用的对象的x的属性，所以b.x 存的是 a的引用，b最终值为{n:1,x:{n:2}}。
+a.x = a = { n: 2 }
+
+// 此时a={n:2}, 故a.x 为 undefined
+console.log(a.x)
+
+// b指针始终没变，b={n:1,x:{n:2}}, 故b.x为{n:2}
+console.log(b.x)
+```
+```js
+var a = {
+  n: 1
+}
+var b = a
+a.x = a = {
+  n: 2
+}
+console.log(a.x)
+// --> undefined
+console.log(b.x)
+// {n: 2}
+```
+
+首先 a 指向了一个对象(A)，b 指向了 a 所指向的对象
+
+之后由于 **.**是优先级最高的运算符，a 指向的对象新增了属性 x
+
+之后，先执行 a={n:2},这时 a 指向的对象(B)发生了改变
+
+接着执行 a.x = a,由于一开始先计算了 a.x, 对象(A)的属性 x 指向了对象(B)
+
+
+## 写一个函数，列出一个整数所有的分解类型，比如对于数字 4，可以做拆分得到下列字符串
+
+```text
+1111
+112
+121
+13
+211
+22
+31
+4
+```
+
+```js
+function f() {
+  var arr = Array.from(arguments)
+  let before = arr.slice(0, arr.length - 1)
+  let n = arr[arr.length - 1]
+  for (let i = 1; i < n; i++) {
+    f(...before, i, n - i)
+  }
+  console.log(arr)
+}
+```
+
+## 写一个函数 isEmptyObject，判断一个对象是不是空对象
+
+```js
+function isEmptyObject(obj) {
+  return Object.keys(obj).length === 0 && obj.constructor === Object
+}
+
+// es5
+function isEmptyObject(obj) {
+  for (var prop in obj) {
+    if (obj.hasOwnProperty(prop)) return false
+  }
+
+  return JSON.stringify(obj) === JSON.stringify({})
+}
+```
+
+## 如下代码输出什么？ 解释原因
+
+```js
+var object1 = {
+  valueOf: function() {
+    return 1
+  },
+  toString: function() {
+    return 'object1'
+  }
+}
+
+var object2 = {
+  valueOf: function() {
+    return 2
+  },
+  toString: function() {
+    return 'object2'
+  }
+}
+
+alert((object2 > object1 + --object1) + true) //输出什么？ 解释原因
+```
+
+(object2 > object1 +-- object1) + true)
+
+object1 和 object2 都是对象，所以运算的时候会调用 valueOf 方法，所以得到：
+(2 > 1 + --1) + true)
+
+--1 为前递减所以为 0，2 > 1 为 true 得到：
+(true + 0) + true)
+
+布尔值在运算时会自动转为数字 true -> 1 false -> 0
+得到：
+(1+ 0) + 1)
+
+所以结果是 2
+
+## 以下代码输出什么?为什么?
+
+```js
+function swap(x, y) {
+  var temp = x
+  x = y
+  y = temp
+}
+
+var a = 1
+var b = 2
+swap(a, b)
+console.log(a) //输出什么
+console.log(b) //输出什么
+
+var obj1 = { name: '1' }
+var obj2 = { age: 2 }
+swap(obj1, obj2)
+console.log(obj1) //输出什么
+console.log(obj2) //输出什么
+```
+
+ECMAScript 中的所有参数传递的都是值，不可能通过引用传递参数。
+
+## 将对象的变量名由连字符式转为驼峰式，支持对象的深度遍历转换
+
+```js
+/**
+ * 将对象的变量名由连字符式转为驼峰式，支持对象的深度遍历转换
+ * @param obj JSON对象
+ * @return JSON 驼峰式的JSON对象
+ */
+function obj2CamelCased(obj) {
+  if (!(obj instanceof Object)) {
+    return obj
+  }
+
+  var newObj = {}
+  for (var prop in obj) {
+    if (obj.hasOwnProperty(prop)) {
+      //推荐在 for in 时，总是使用 hasOwnProperty 进行判断，没人可以保证运行的代码环境是否被污染过。
+      var camelProp = prop.replace(/_([a-z])/g, function(g) {
+        return g[1].toUpperCase()
+      })
+      if (obj[prop] instanceof Array) {
+        //值为数组的处理
+        newObj[camelProp] = []
+        var oldArray = obj[prop]
+        for (var k = 0, kLen = oldArray.length; k < kLen; k++) {
+          newObj[camelProp].push(arguments.callee(oldArray[k]))
+        }
+      } else if (obj[prop] instanceof Object) {
+        //值为对象的处理
+        newObj[camelProp] = arguments.callee(obj[prop])
+      } else {
+        //值为字符串，或数字等的处理
+        newObj[camelProp] = obj[prop]
+      }
+    }
+  }
+  return newObj
+}
+```
+
+## JS 中的数组过滤 多条件多数据筛选
+
+```js
+//根据名字和年龄多元素筛选
+export function multiFilter(array, filters) {
+  const filterKeys = Object.keys(filters)
+  // filters all elements passing the criteria
+  return array.filter(item => {
+    // dynamically validate all filter criteria
+    return filterKeys.every(key => {
+      //ignore when the filter is empty Anne
+      if (!filters[key].length) return true
+      return !!~filters[key].indexOf(item[key])
+    })
+  })
+}
+/*
+ * 这段代码并非我原创，感兴趣的可以去原作者那里点个赞
+ * 作者是：@author https://gist.github.com/jherax
+ * 这段代码里我只加了一行，解决部分筛选条件清空时候整体筛选失效的问题
+ */
+
+var filters = {
+  name: ['Leila', 'Jay'],
+  age: []
+}
+/* 结果：
+ * [{name: "Leila", age: 16, gender: "female"},
+ *  {name: "Jay", age: 19, gender: "male"}]
+ */
+```
+
+## 实现一个 get 函数，使得下面的调用可以输出正确的结果
+
+```js
+const obj = {
+  selector: { to: { toutiao: 'FE Coder' } },
+  target: [1, 2, { name: 'byted' }]
+}
+
+get(obj, 'selector.to.toutiao', 'target[0]', 'target[2].name')
+// [ 'FE Coder', 1, 'byted']
+```
+
+```js
+function get(data, ...args) {
+  const reg = /\[[0-9]+\]/gi
+  return args.map(item => {
+    const paths = item.split('.')
+    let res = data
+    paths.map(path => {
+      try {
+        if (reg.test(path)) {
+          const match = path.match(reg)[0]
+          const cmd = path.replace(match, '')
+          const arrIndex = match.replace(/[\[\]]/gi, '')
+          res = res[cmd][arrIndex]
+        } else {
+          res = res[path]
+        }
+      } catch (err) {
+        console.error(err)
+        res = undefined
+      }
+    })
+    return res
+  })
+}
+```
+
+```js
+function get(data, ...args) {
+  const res = JSON.stringify(data)
+  return args.map(item =>
+    new Function(`try {return ${res}.${item} } catch(e) {}`)()
+  )
+}
+
+const obj = {
+  selector: { to: { toutiao: 'FE Coder' } },
+  target: [1, 2, { name: 'byted' }]
+}
+
+console.log(
+  get(obj, 'selector.to.toutiao', 'target[0]', 'target[2].name', 'asd')
+)
+function get(data, ...args) {
+  return args.map(item =>
+    new Function('data', `try {return data.${item} } catch(e) {}`)(data)
+  )
+}
+```
+
+## JS 实现持续的动画效果
+
+```js
+// 定时器
+var e = document.getElementById('e')
+var flag = true
+var left = 0
+setInterval(() => {
+  left == 0 ? (flag = true) : left == 100 ? (flag = false) : ''
+  flag ? (e.style.left = ` ${left++}px`) : (e.style.left = ` ${left--}px`)
+}, 1000 / 60)
+// requestAnimationFrame
+var e = document.getElementById('e')
+var flag = true
+var left = 0
+function render() {
+  left == 0 ? (flag = true) : left == 100 ? (flag = false) : ''
+  flag ? (e.style.left = ` ${left++}px`) : (e.style.left = ` ${left--}px`)
+}
+
+;(function animloop() {
+  render()
+  requestAnimFrame(animloop)
+})()
+// 浏览器可以优化并行的动画动作，更合理的重新排列动作序列，并把能够合并的动作放在一个渲染周期内完成，从而呈现出更流畅的动画效果
+// 解决毫秒的不精确性
+// 避免过度渲染（渲染频率太高、tab 不可见暂停等等）
+// 注：requestAnimFrame 和 定时器一样也头一个类似的清除方法 cancelAnimationFrame。
+
+// 兼容性处理
+window.requestAnimFrame = (function() {
+  return (
+    window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    function(callback) {
+      window.setTimeout(callback, 1000 / 60)
+    }
+  )
+})()
+
+let e = document.getElementById('e')
+let flag = true
+let left = 0
+
+function render() {
+  left === 0 ? (flag = true) : left == 100 ? (flag = false) : ''
+  flag ? (e.style.left = ` ${left++}px`) : (e.style.left = ` ${left--}px`)
+}
+
+(function animloop() {
+  render()
+  window.requestAnimFrame(animloop)
+})()
+```
+
+## JS题目之数组数据拆分重组转成嵌套对象
+
+```js
+// 求数组转换成jso
+//['codeZh', 'codeCn', 'taobao.cn', 'taobao.com']
+// 输出
+/*
+{ 
+  'code':{Zh:'codeZh',Cn:'codeCn'},
+  'taobao':{'.cn':'taobao.cn},'.com':'taobao.com'
+}
+*/
+
+const resultObj = {}
+let arr = ['codeZh', 'codeCn', 'taobao.cn', 'taobao.com']
+
+let arrSplit = arr.map(item =>
+  item.indexOf('.') !== -1
+    ? item.replace(/(\.)/g, ',$1').split(',')
+    : item.replace(/([A-Z])+/g, ',$1').split(',')
+)
+
+let arrGroup = arrSplit.map(item => ({
+  [item[0]]: { [item[1]]: item.join('') }
+}))
+
+for (let i = 0; i < arrGroup.length; i++) {
+  for (const [key, value] of Object.entries(arrGroup[i])) {
+    resultObj[key] = {
+      ...resultObj[key],
+      ...value
+    }
+  }
+}
+
+console.log(arrSplit)
+console.log(arrGroup)
+console.log(resultObj)
+
+const list = ['codeZh', 'codeCn', 'taobao.cn', 'taobao.com']
+const result = list.reduce((map, item) => {
+  const [head, tail] = item.split(/(?=[A-Z]|\.)/)
+  map[head] = map[head] || {}
+  map[head][tail] = item
+  return map
+}, {})
+console.log(result)
+```
+
+## 转换驼峰命名
+
+```js
+/**
+ * @param {String} variable
+ * @returns {String} newVariable
+ */
+ // 利用String.prototype.replace()
+const toCamelCaseVar = variable =>
+  variable.replace(/_+[a-zA-Z]/g, (m, i) => {
+    if (i) {
+      return m.match(/[a-zA-Z]/)[0].toUpperCase()
+    }
+    return m
+  })
+```
+
+## 后端数据处理
+
+```js
+// {
+//   rows: [
+//     ["Lisa", 16, "Female", "2000-12-01"],
+//     ["Bob", 22, "Male", "1996-01-21"]
+//   ],
+//   metaData: [
+//     { name: "name", note: '' },
+//     { name: "age", note: '' },
+//     { name: "gender", note: '' },
+//     { name: "birthday", note: '' }
+//   ]
+// }
+// rows 是数据，metaData 是对数据的说明。现写一个函数 parseData，将上面的对象转化为期望的数组：
+
+// [
+//   { name: "Lisa", age: 16, gender: "Female", birthday: "2000-12-01" },
+//   { name: "Bob", age: 22, gender: "Male", birthday: "1996-01-21" },
+// ]
+
+/**
+ *
+ * @param {Object} data
+ * @returns {Array}
+ */
+const parseData = data => data.rows.map((item) => {
+  const obj = {}
+  for (let i = 0, len = item.length; i < len; i++) {
+    obj[data.metaData[i].name] = item[i]
+  }
+  return obj
+})
+```
+
+## 将 JS 数组格式转换为树格式
+
+将数组['A-->B-->C-->D-->E', 'A-->B-->C-->D-->F', 'A-->F-->C-->D-->E']转换为树结构
+
+```js
+function Node(id) {
+  this.id = id
+  this.children = [] // array
+}
+
+Node.prototype.getChild = function(id) {
+  var node
+  this.children.some(function(n) {
+    if (n.id === id) {
+      node = n
+      return true
+    }
+  })
+  return node
+}
+
+var path = ['A-->B-->C-->D-->E', 'A-->B-->C-->D-->F', 'A-->F-->C-->D-->E'],
+  tree = new Node('root')
+
+path.forEach(function(a) {
+  var parts = a.split('-->')
+  parts.reduce(function(r, b) {
+    var node = r.getChild(b)
+    if (!node) {
+      node = new Node(b)
+      r.children.push(node)
+    }
+    return node
+  }, tree)
+})
+
+console.log(tree)
+
+function Node(id) {
+  this.id = id
+  this.children = {} // object
+}
+
+var path = ['A-->B-->C-->D-->E', 'A-->B-->C-->D-->F', 'A-->F-->C-->D-->E'],
+  tree = new Node('root')
+
+path.forEach(function(a) {
+  var parts = a.split('-->')
+  parts.reduce(function(r, b) {
+    if (!r.children[b]) {
+      r.children[b] = new Node(b)
+    }
+    return r.children[b]
+  }, tree)
+})
+
+console.log(tree)
+```
+
+## 旋转城市字母
+
+```
+['Tokyo', 'London', 'Rome', 'Donlon', 'Kyoto', 'Paris']
+// YOUR ALGORITHM
+[
+    [ 'Tokyo', 'Kyoto' ],
+    [ 'London', 'Donlon' ],
+    [ 'Rome' ],
+    [ 'Paris' ]
+]
+```
+
+旋转每个城市的字母，可能会或可能不匹配另一个城市,将它们放在一个数组中。
+
+要点：字母一个接一个地旋转。Tokyo matches only with: okyoT, kyoTo, yoTok, oToky.
+
+```js
+const getWordRotations = word =>
+  [...word].reduce(
+    acc => [acc[0].substring(1) + acc[0].substring(0, 1), ...acc],
+    [word]
+  )
+
+const groupCitiesByRotatedNames = cities =>
+  cities.reduce((acc, city) => {
+    const cityGroup = acc.find(item =>
+      getWordRotations(city.toLowerCase()).includes(item[0].toLowerCase())
+    )
+
+    cityGroup
+      ? acc.splice(acc.indexOf(cityGroup), 1, [...cityGroup, city])
+      : acc.push([city])
+
+    return acc
+  }, [])
+
+const test = groupCitiesByRotatedNames([
+  'Tokyo',
+  'London',
+  'Rome',
+  'Donlon',
+  'Kyoto',
+  'Paris'
+])
+
+console.log('test', test)
+```
+
+## 查找不同顺序排列的字符串
+
+需求描述：从一组数组中找出一组按不同顺序排列的字符串的数组元素。假如有这样一个数组：
+
+```js
+;['abcd', 'hello', 'bdca', 'olleh', 'cadb', 'nba', 'abn', 'abc']
+```
+
+需要找出的结果是：
+
+```js
+;['abcd', 'bdca', 'cadb']
+```
+
+关键点是判断一组字符串是否是否只是字符的顺序不同
+
+方法 1 采用了遍历字符串中的每一个字符，然后将单个的字符转换成 Unicode 编码，对编码进行取和的计算，abcd 和 bdca 的编码和会是一致的。最后用编码和作为对象的 key 来保存编码和一致的字符串。
+
+方法 1 需要注意的是，字符串“ad”和“bc”的 Unicode 编码和是一样的，此时需要多加一个判断，检测任意一个字符串中的第一个字符是否有出现在另一个字符串中出现过即可。
+
+```js
+let stringClassify = function(arr) {
+  let arrLength = arr.length
+  let obj = {}
+  let name
+  let firstItem
+
+  for (let i = 0; i < arrLength; i++) {
+    let item = arr[i]
+    let strLength = item.length
+    let num = 0
+    // 将单个的字符转换成 Unicode 编码
+    // 对编码进行取和计算
+    for (let j = 0; j < strLength; j++) {
+      num += item.charCodeAt(j)
+    }
+    if (!firstItem) {
+      firstItem = item
+      obj[num].push(item)
+    } else if (~firstItem.indexOf(item.charAt(0))) {
+      // 通过检测待添加的字符串的第一个字符是否
+      // 在另一个字符串中出现以避免将下面的情况
+      // [ 'ad', 'da', 'bc' ]
+      obj[num].push(item)
+    }
+    for (name in obj) {
+      console.log(obj[name])
+    }
+  }
+}
+```
+
+方法 2 是将字符串转换成数组后再对数组进行 sort 排序，abcd 和 bdca 使用 sort 排序后会变成 abcd，将拍好序的字符串作为对象的 key 来保存排序一致的字符串。
+
+```js
+let stringClassify = function() {
+  let arrLength = arr.length
+  let obj = {}
+  for (let i = 0; i < arrLength; i++) {
+    let item = arr[i]
+    let strArr = arr[i].split('')
+    let newStr = strArr.sort().join('')
+
+    if (!obj[newStr]) {
+      obj[newStr] = []
+    }
+    obj[newStr].push(item)
+  }
+  for (name in obj) {
+    console.log(obj[name])
+  }
+}
+```
+
+其实两种方法的原理都是通过将字符转换成 Unicode 编码，只是方法 1 是显式的转换，而方法 2 中用到的 sort 排序，会隐式的转换
+
+## 比较数组或对象的内容是否相同
+
+因为在 JS 中引用类型的==或===操作符只是判断两个引用类型是否是同一个对象引用。JavaScript 没有内置的操作符判断对象的内容是否相同。
+
+```js
+// Warn if overriding existing method
+if (Array.prototype.equals) {
+  console.warn(
+    "Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code."
+  )
+}
+
+// attach the .equals method to Array's prototype to call it on any array
+Array.prototype.equals = function(array) {
+  // if the other array is a falsy value, return
+  if (!array) return false
+
+  // compare lengths - can save a lot of time
+  if (this.length !== array.length) return false
+
+  for (var i = 0, l = this.length; i < l; i++) {
+    // Check if we have nested arrays
+    if (this[i] instanceof Array && array[i] instanceof Array) {
+      // recurse into the nested arrays
+      if (!this[i].equals(array[i])) return false
+    } else if (this[i] !== array[i]) {
+      // Warning - two different object instances will never be equal: {x:20} != {x:20}
+      return false
+    }
+  }
+  return true
+}
+// Hide method from for-in loops
+Object.defineProperty(Array.prototype, 'equals', { enumerable: false })
+```
+
+```js
+Object.prototype.equals = function(object2) {
+  //For the first loop, we only check for types
+  for (propName in this) {
+    //Check for inherited methods and properties - like .equals itself
+    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty
+    //Return false if the return value is different
+    if (this.hasOwnProperty(propName) !== object2.hasOwnProperty(propName)) {
+      return false
+    }
+    //Check instance type
+    else if (typeof this[propName] !== typeof object2[propName]) {
+      //Different types => not equal
+      return false
+    }
+  }
+  //Now a deeper check using other objects property names
+  for (propName in object2) {
+    //We must check instances anyway, there may be a property that only exists in object2
+    //I wonder, if remembering the checked values from the first loop would be faster or not
+    if (this.hasOwnProperty(propName) !== object2.hasOwnProperty(propName)) {
+      return false
+    } else if (typeof this[propName] !== typeof object2[propName]) {
+      return false
+    }
+    //If the property is inherited, do not check any more (it must be equa if both objects inherit it)
+    if (!this.hasOwnProperty(propName)) continue
+
+    //Now the detail check and recursion
+
+    //This returns the script back to the array comparing
+    /**REQUIRES Array.equals**/
+    if (this[propName] instanceof Array && object2[propName] instanceof Array) {
+      // recurse into the nested arrays
+      if (!this[propName].equals(object2[propName])) return false
+    } else if (
+      this[propName] instanceof Object &&
+      object2[propName] instanceof Object
+    ) {
+      // recurse into another objects
+      //console.log("Recursing to compare ", this[propName],"with",object2[propName], " both named \""+propName+"\"");
+      if (!this[propName].equals(object2[propName])) return false
+    }
+    //Normal value comparison for strings and numbers
+    else if (this[propName] !== object2[propName]) {
+      return false
+    }
+  }
+  //If everything passed, let's say YES
+  return true
+}
+```
+
+## 用 JavaScript 在一个数组中插入另一个数组
+
+给一个数组, 将另一个数组插入其指定位置, 用 ES5 和 ES6 语法分别如何实现.
+
+### ES6
+
+使用 ES6 中的 Spread 操作符...
+
+```js
+// 原数组
+let a = [3, 4]
+// 要插入的数组
+let b = [1, 2]
+// 要插入的位置
+let index = 1
+// 插入
+
+a.splice(index, 0, ...b)
+```
+
+### ES5
+
+ES5 利用 apply：可以实现将参数用数组的方式绑定到执行的方法上面。
+
+将所有需要的参数放进一个数组里面,然后用 apply
+
+```js
+// 原数组
+let a = [3, 4]
+// 要插入的数组
+let b = [1, 2]
+// 要插入的位置
+let index = 1
+a.splice.apply(a, [index, 0].concat(b))
+```
+
+## 字符串（大数字）计算相加并转换成字符串
+
+String.prototype.reverse = function() {
+  return this.split('').reverse().join('');
+}
+function sumStrings(a,b) {
+  a = a.reverse(); b = b.reverse();
+  var carry = 0;
+  var index = 0;
+  var sumDigits = [];
+  while (index < a.length || index < b.length || carry != 0) {
+    var aDigit = index < a.length ? parseInt(a[index]) : 0;
+    var bDigit = index < b.length ? parseInt(b[index]) : 0;
+    var digitSum = aDigit + bDigit + carry;
+    sumDigits.push((digitSum % 10).toString());
+    carry = Math.floor(digitSum / 10);
+    index++;
+  }
+  sumDigits.reverse();
+  while (sumDigits[0] == '0') sumDigits.shift();
+  return sumDigits.join('');
+}
+
+# JS 题目
+
+<a name="010ecdeb"></a>
+## 判断变量类型
+使用`typeof`和`instanceof`的弊端：
+
+```javascript
+let obj = {}
+let arr = []
+
+console.log(typeof obj === 'object') // true
+console.log(typeof arr === 'object') // true
+console.log(typeod null === 'object') // true
+```
+
+使用 `Object.prototype.toString.call([]) === "[object Array]"` 来进行判断。
+
+<a name="NaN"></a>
+## NaN
+JS 中的一种特殊数值，其类型是 Number,通过 Number.isNaN() 来判断。
+
+<a name="d456b452"></a>
+## 浮点数计算
+JS 中的 number 类型为浮点型，采用 IEEE-754 格式，有舍入误差。
+<a name="e3b13f8b"></a>
+### 保证浮点数计算的正确性
+先升幂再降幂:
+
+```javascript
+function add(num1, num2) {
+  let r1
+  let r2
+  let m
+  
+  r1 = ('' + num1).split('.')[1].length;
+  r2 = ('' + num2).split('.')[1].length;
+  m = Math.pow(10, Math.max(r1, r2))
+  return (num1 * m + num2 * m) / m
+}
+```
+<a name="3f2cd077"></a>
+## 设置一个对象属性
+设置对象属性时，JavaScript 将隐式地字符串化参数值。在这种情况下，由于b和c都是对象，它们都将被转换为“[object Object]”。结果，a[b] 和 a [c] 都等同于[“[object Object]”] 并且可以互换使用。因此，设置或引用[c]与设置或引用[b]完全相同。
+
+```javascript
+var a={}
+var b={key:'b'}
+var c={key:'c'}
+
+a[b]=123;
+a[c]=456;
+
+console.log(a[b]); // 456
+```
+<a name="d63b4b7e"></a>
+## 遍历 DOM 元素
+
+```javascript
+function Traverse(p_element, p_callback) {
+  p_callback(p_element)
+  let list = p_element.children
+  for(let i = 0; i < list.length; i++) {
+    Traverse(list[i], p_callback)
+  }
+}
+```
+<a name="c530ebc7"></a>
+## 综合 JS 题目
+
+```javascript
+function Foo() {
+    getName = function () { alert (1); };
+    return this;
+}
+Foo.getName = function () { alert (2);};
+Foo.prototype.getName = function () { alert (3);};
+var getName = function () { alert (4);};
+function getName() { alert (5);}
+
+Foo.getName();//2
+getName();//4
+Foo().getName();//1
+getName();//1
+new Foo.getName();//2
+new Foo().getName();//3
+new new Foo().getName();//3
+```
+1. 访问 Foo 函数上存储的静态属性；
+1. 直接调用 getName 函数，变量声明提升，函数表达式；
+1. 第三问的 Foo().getName(); 先执行了Foo函数，然后调用Foo函数的返回值对象的getName属性函数。
+
+Foo函数的第一句  getName = function () { alert (1); };  是一句函数赋值语句，注意它没有var声明，所以先向当前Foo函数作用域内寻找getName变量，没有。再向当前函数作用域上层，即外层作用域内寻找是否含有getName变量；this 指向 window 对象；window中的getName已经被修改为alert(1)，所以最终会输出1。
+4. 直接调用getName函数，相当于 window.getName() ，输出1。
+4. 考察 JS 的运算符优先级，表达式相当于 `new`` (Foo.getName)()`实际上将 getName 函数作为了构造函数来执行，遂弹出2。
+4. 表达式相当于 `(``new`` Foo()).getName()` ,构造函数的返回值：
+  1. 没有返回值返回实例化对象。
+  1. 若有返回值则检查其返回值是否为**引用类型**。如果是非引用类型，如基本类型（string,number,boolean,null,undefined）则与无返回值相同，实际返回其实例化对象。
+  1. 若返回值是引用类型，则实际返回值为这个引用类型。
+
+调用实例化对象的 getName 函数，因为在 Foo 构造函数中没有为实例化对象添加任何属性，遂到当前对象的原型对象（prototype）中寻找 getName ，输出3。
+7. 表达式相当于 `new`` ((``new`` Foo()).getName)()` 先初始化 Foo 的实例化对象，然后将其原型上的getName 函数作为构造函数再次 new，输出3。
+<a name="d77366b3"></a>
+## 海量数据加载
+1. 分时函数
+1. requestAnimationFrame
+<a name="4503525f"></a>
+## 10 个 Ajax 同时发起请求，全部返回展示结果，并且至多允许三次失败，说出设计思路
+
+```javascript
+// Promise 写法
+let errorCount = 0
+let p = new Promise((resolve, reject) => {
+    if (success) {
+         resolve(res.data)
+     } else {
+         errorCount++
+         if (errorCount > 3) {
+            // 失败次数大于3次就应该报错了
+            reject(error)
+         } else {
+             resolve(error)
+         }
+     }
+})
+Promise.all([p]).then(v => {
+  console.log(v);
+});
+```
+<a name="b7be860d"></a>
+## 基于 Localstorage 设计一个 1M 的缓存系统，需要实现缓存淘汰机制
+设计思路如下：
+* 存储的每个对象需要添加两个属性：分别是过期时间和存储时间。
+* 利用一个属性保存系统中目前所占空间大小，每次存储都增加该属性。当该属性值大于 1M 时，需要按照时间排序系统中的数据，删除一定量的数据保证能够存储下目前需要存储的数据。
+* 每次取数据时，需要判断该缓存数据是否过期，如果过期就删除。
+
+```javascript
+class Store {
+  constructor() {
+    let store = localStorage.getItem('cache')
+    if (!store) {
+      store = {
+        maxSize: 1024 * 1024,
+        size: 0
+      }
+      this.store = store
+    } else {
+      this.store = JSON.parse(store)
+    }
+  }
+  set(key, value, expire) {
+    this.store[key] = {
+      date: Date.now(),
+      expire,
+      value
+    }
+    let size = this.sizeOf(JSON.stringify(this.store[key]))
+    if (this.store.maxSize < size + this.store.size) {
+      console.log('超过缓存大小')
+      var keys = Object.keys(this.store)
+      // 时间排序
+      keys = keys.sort((a, b) => {
+        let item1 = this.store[a]
+        let item2 = this.store[b]
+        return item2.date - item1.date
+      })
+      while (size + this.store.size > this.store.maxSize) {
+        let index = keys[keys.length - 1]
+        this.store.size -= this.sizeOf(JSON.stringify(this.store[index]))
+        delete this.store[index]
+      }
+    }
+    this.store.size += size
+
+    localStorage.setItem('cache', JSON.stringify(this.store))
+  }
+  get(key) {
+    let d = this.store[key]
+    if (!d) {
+      console.log('找不到该属性')
+      return
+    }
+    if (d.expire > Date.now) {
+      console.log('过期删除')
+      delete this.store[key]
+      localStorage.setItem('cache', JSON.stringify(this.store))
+    } else {
+      return d.value
+    }
+  }
+  sizeOf(str, chartSet) {
+    let total = 0
+    let charCode
+    let i
+    let len
+    let chartSet = chartSet ? chartSet.toLowerCase() : ''
+    if (charset === 'utf-16' || charset === 'utf16') {
+      for (i = 0, len = str.length; i < len; i++) {
+        charCode = str.charCodeAt(i);
+        if (charCode <= 0xffff) {
+          total += 2;
+        } else {
+          total += 4;
+        }
+      }
+    } else {
+      for (i = 0, len = str.length; i < len; i++) {
+        charCode = str.charCodeAt(i);
+        if (charCode <= 0x007f) {
+          total += 1;
+        } else if (charCode <= 0x07ff) {
+          total += 2;
+        } else if (charCode <= 0xffff) {
+          total += 3;
+        } else {
+          total += 4;
+        }
+      }
+    }
+    return total;
+  }
+}
+```
+![image.png](https://cdn.nlark.com/yuque/0/2019/png/106627/1554790973939-b4daf182-b5cf-4ea2-9c42-1789c50929c0.png#align=left&display=inline&height=249&name=image.png&originHeight=280&originWidth=872&size=45431&status=done&width=775)
+* 用二分查找实现 `indexOf` 方法，不允许用递归；
+<a name="ab6469dc"></a>
+## 实现一个函数能做到 function add(1)(2)(3) //6，达到function add(1)(2)(3)...(n)
+这里要引生出来俩个js内置的方法，`valueOf`和`toString`方法，在特定的情况下，这俩个方法都会自动调用，而且在用户定义了新的valueof和tostring的时候，会优先执行新的方法。<br />在做字符串拼接等需要调用tostring()方法的是有优先调用toString(),如果调用后还是不能返回原始类型的话会继续调用valueOf方法。<br />而在做类似number的运算的时候会优先调用valueOf().<br />而对于函数而言，add 和add()的返回是不一样的。add()会返回return的值。而add则会调用valueOf答应出来函数本身的代码.函数的转换类似于number。<br />解题
+
+function add () {<br />var args = [].slice.call(arguments);//这里也用到了闭包的概念对args的存储
+
+```javascript
+var fn = function () {
+    var arg_fn = [].slice.call(arguments); //这里的递归是为了合并参数
+    return add.apply(null, args.concat(arg_fn));
+}
+
+fn.valueOf = function() {
+    return args.reduce((a, b) => a + b);//真正的输出是valueof
+}
+return fn;
+}
+```
+<a name="d84e1ac7"></a>
+## Object.defineProperty()和 {} 出来的对象有什么区别
+<a name="9dcbb5bf"></a>
+## 解析url后的参数
+
+```javascript
+function parseParam(url) {
+  let obj = {};
+  let arr = url.split("?");
+  if (arr.length == 1) { //判断没有问号
+    return "无参数"
+  }
+  let total = arr[1].split("&");
+  for (let i = 0; i < total.length; i++) {
+    let single = total[i].split("=");
+    if (single[0] == '') { //判断有？但是没有参数
+      return '无参数'
+    }
+    if (!single[1]) {
+      obj[single[0]] = true;
+    } else {
+      if (obj[single[0]]) {
+        let concat
+        if (!Array.isArray(obj[single[0]])) { //判断是否数组
+          concat = [obj[single[0]]]
+        } else {
+          concat = obj[single[0]];
+        }
+        concat.push(single[1]);
+        concat = new Set(concat);
+        concat = Array.from(concat) //数组去重
+        obj[single[0]] = concat
+      } else {
+        obj[single[0]] = decodeURI(single[1]) //进行转码
+      }
+    }
+  }
+  return obj
+}
+
+var url = 'http://www.baidu.com/?user=huixin&id=123&id=456&city=%E5%8C%97%E4%BA%AC&enabled';
+
+var params = parseParam(url)
+
+console.log(params)
+
+```
+<a name="ca3ed2ca"></a>
+## 实现一个简单的模版引擎：
+列：我叫a,年龄b，性别c； let data = { name: '小明', age: 18, } 没有定义的返回undefined
+
+```javascript
+
+let template = '我是{name}，年龄{age}，性别{sex}';
+    let data = {
+        name: '小明',
+        age: 18,
+    }
+    const  reg= /({([a-zA-Z]+)})/g;
+    var r= '',regrounp={};
+    while( r = reg.exec(template) ){
+        Object.defineProperty(regrounp,r[2],{
+            enumerable:true,
+            value:r[2]
+        })
+    }
+
+    var render = (template,regrounp)=>{
+        var result='';
+        for( key in regrounp){
+            if(data[key] == undefined){
+                result  = (result || template).replace(new RegExp(`{${regrounp[key]}}`,"g"),undefined);
+            }else{		
+                result  = (result || template).replace(new RegExp(`{${regrounp[key]}}`,"g"),data[key]);
+            }
+        }
+        return result
+    }
+    let newtemple = render(template, regrounp);
+    console.log(newtemple) // 结果： 我是小明，年龄18，性别undefined
+  
+
+```
+<a name="2e3782b5"></a>
+## 如何快速让字符串变成已千为精度的数字
+```javascript
+function exchange(num) {
+    num += ''; //转成字符串
+    if (num.length <= 3) {
+        return num;
+    }
+
+    num = num.replace(/\d{1,3}(?=(\d{3})+$)/g, (v) => {
+        console.log(v)
+        return v + ',';
+    });
+    return num;
+}
+
+console.log(exchange(1234567));
+
+
+```
+
+使用setTimeout实现setInterval功能
+
+
+function mySetInterval(fn, ms, count) {
+    function interval() {
+        if(typeof count === 'undefined' || count-- > 0) {
+            setTimeout(interval, ms);
+            try {
+                fn();
+            } catch(e) {
+                count = 0;
+                throw e.toString();
+            }
+        }
+    }
+    setTimeout(interval, ms);
+}
+父组件调用子组件的方法，父组件给子组件添加方法，父组件改子组件的样式，父组件怎么给子组件传一个带$的参数，子组件向父组件声明自己存在
+
+
+
+
+说说xss与csrf，怎么防止
+
+xss：跨站脚本攻击，如果不过滤执行了js代码，可能导致cookie泄露等。防止：过滤
+csrf：跨站请求伪造，挟制用户在当前已登录的Web应用程序上执行非本意的操作。防止：设置token、写操作用post、JSON API禁用CORS、禁用跨域请求、检查referrer
+1.实现destructuringArray方法，达到如下效果
+
+https://juejin.im/post/5a969571f265da4e8c453be4?utm_source=gold_browser_extension
+
+// destructuringArray( [1,[2,4],3], "[a,[b],c]" );
+// result
+// { a:1, b:2, c:3 }
+复制代码
+[1,[2,4],3], "[a,[b],c]"  ==> {a:1,b:2,c:3}
+[1,[2,3,[4]]],  "[react,[vue,rxjs,[angular]]]" ==> {react:1,vue:2,rxjs:3,angular:4}
+[1,[2,4],3], "[a,[[b],c]"  ==> Error: too many left square brackets
+[1,[2,4],3], "[a,[b]],c]"  ==> Error: too many right square brackets ==>pos:9
+[1,[2,4],3], "[33a,[b],c]" ==> Error: key is invalid varible => 33a
+[1,[2,4],3], "[re[a]ct,[b],c]" ==> Error: invalid string==>pos:3
+[1,[2,4],3], "rx,[react,[b],c]" ==> Error: template with invalid start or end
+[1,[2,4],3], "[react,[b],c],rx" ==> Error: template with invalid start or end
+2.需要通过threshold参数控制调用函数频率
+
+const yourFunction = function(func, threshold) {
+ // 请实现
+}
+const triggerSearch = yourFunction((val) => {
+  const {
+    onSearch
+  } = this.props
+  onSearch(val)
+}, 300)
+triggerSearch(searchText)
+
+
+// 第一题
+
+const targetArray = [1, [2, 3], 4];
+
+const formater = "[a, [b], c]";
+
+const formaterArray = ['a', ['b'], 'c'];
+
+
+
+const destructuringArray = (values, keys) => {
+
+try {
+
+const obj = {};
+
+if (typeof keys === 'string') {
+
+keys = JSON.parse(keys.replace(/\w+/g, '"$&"'));
+
+}
+
+
+
+const iterate = (values, keys) =>
+  keys.forEach((key, i) => {
+    if(Array.isArray(key)) iterate(values[i], key)
+    else obj[key] = values[i]
+  })
+  
+iterate(values, keys)
+
+return obj;
+
+
+} catch (e) {
+
+console.error(e.message);
+
+}
+
+}
+
+
+
+console.dir(destructuringArray(targetArray,formater));
+
+console.dir(destructuringArray(targetArray,formaterArray));
+
+
+
+// 第二题
+
+const yourFunction = function(func, threshold) {
+
+let timeOut;
+
+return function() {
+
+if (!timeOut) {
+
+timeOut = setTimeout(() => {
+
+timeOut = null;
+
+func.apply(this, arguments)
+
+}, threshold)
+
+}
+
+}
+
+}
+
+
+
+const triggerSearch = yourFunction((val) => {
+
+const {
+
+onSearch
+
+} = this.props
+
+onSearch(val)
+
+}, 300)
+
+triggerSearch(searchText)
+
+数组有一个length字段，每个api操作length字段都会改变，你觉得如果让你来实现这个字段，你认为怎么处理是最优的方案
+
+从这里我可能会引申到计算属性的实现、ES6中，Map/Set等数据结构的理解，如果聊得比较投机，甚至会涉及到更多基础数据结构的相互探讨，因为大多数前端对数据结构不太重视，所以如果能够聊到这里，基本上就超级加分了
+
+
+
+map、forEach、reduce ... 你有经常使用吗？
+
+Q: 这些方法为什么会传入函数作为参数，你有想过如何实现吗？
+
+如果这里回答上来了会瞬间加分，因为我就可以进一步跟他聊高阶函数以及函数式编程
+
+es5实现const
+
+
+vue中在哪个阶段进行异步请求比较合适
+
+
+ajax和axios的不同
+
+
+vue中vuex的mapSetter是怎么实现的
+
+
+什么是尾递归
+
+
+vue项目中使用到的优化手段
+
+
+commonjs和ES6中的模块化有什么区别
+
+
+webstoreage如果存储满了会怎么样（报错）
+
+
+如何获取一个div下所有的文本节点
+
+
+
+为什么不同浏览器渲染出来的东西会有差别，本质是什么
+vue中写一个组件要注意哪些
+js如何实现多线程，webworker怎么通信
+requestAnimationFrame和setTimeout写动画的区别
+如何实现小于12px的字体效果
+数组去重怎么做，如果是数组是这样的[1,[2],[3]]，该如何去重（bilibili）
+写一个函数 实现test(a)(b),如果b>0 返回a+b，如果b<0,返回a-b（柯里化考察）（bilibili）
+function test(){
+    var a= [...arguments][0];
+    return function(){
+        var b = [...arguments][0];
+        if(b>0){
+            return a+b;
+        }else{
+            return a-b
+        }
+    }
+}
+复制代码
+实现链式调用（百度）
+coder.sleep().print1().print2()
+class Coder{
+    sleep(){
+        console.log("sleep");
+        return this;//链式调用的关键
+    }
+    print1(){
+        console.log(1);
+        return this;//链式调用的关键
+    }
+    print2(){
+        console.log(2);
+        return this;//链式调用的关键
+    }
+}
+复制代码
+如果sleep函数要等待3秒钟再打印然后在执行之后的操作呢？
+class Coder {
+  sleep(){
+    var date = new Date();
+    while((new Date() - date) < 3000) {
+      //通过这里进行阻塞sleep
+    }
+    console.log("sleep");
+    return this;//链式调用的关键
+  }
+  print1(){
+    console.log(1);
+    return this;//链式调用的关键
+  }
+  print2(){
+    console.log(2);
+    return this;//链式调用的关键
+  }
+}
+var b = new Coder()
+b.sleep().print1().print2()
+复制代码
+以下代码会输出什么(百度)
+var date = new Date();
+setTimeout(()=>{
+    console.log(new Date()-date)
+},1000)
+while((new Date()-date)<3000){
+    
+}
+
+
+事件代理考察：（百度） 如果有一个页面，有许多a标签，在上面写点击事件的事件代理怎么写。 如果a标签里面也有很多子节点，点击了这些子节点也要实现上面效果?
+思路：循环判断e.target.parentNode.tagName==="a"
+跳台阶算法（美团）
+火车运煤算法（美团）
+[1,[2],[3,[4]]]这种无限嵌套数组 变成[1,2,3,4]怎么做
+
+
+git的stage，三个区是什么（工作区，暂存区，版本库）（阿里） 如果要写实现一个抢红包页面，如何防止有人恶意一直玩抢红包或者发包模拟抢红包请求（网易）
+
+个人思路：
+
+1、判断一段时间内同一个IP的请求数量
+
+2、设置验证码
+
+3、看页面访问顺序，一般有一个入口页面再是抢红包页面。恶意发包可能是直接的页面请求
+
+4、达到一定次数或者红包额度，直接丢包
+
+
+
+<div class="mod-spm" data-spmid="123">
+       <div class="child_a"></div>
+       <div class="child_b"></div>
+       <div class="child_c"></div>
+       <div class="child_d"></div>
+     </div>
+     <div class="mod-spm" data-spmid="456">
+       <div class="child_a"></div>
+       <div class="child_b"></div>
+       <div class="child_c"></div>
+       <div class="child_d"></div>
+     </div>
+     <div class="mod-spm" data-spmid="789">
+       <div class="child_a"></div>
+       <div class="child_b"></div>
+       <div class="child_c"></div>
+       <div class="child_d"></div>
+     </div>
+
+
+  .mod-spm[data-spmid='123']{
+     width: 100px;
+     height: 100px;
+     margin-right: auto;
+     margin-left: auto;
+     margin-bottom: 20px;
+     background-color: #fff;
+     border: 2px #000 solid;
+  }
+  .mod-spm[data-spmid='456']{
+     width: 100px;
+     height: 100px;
+     margin-right: auto;
+     margin-left: auto;
+     margin-bottom: 20px;
+     background-color: #fff;
+     border: 2px #000 solid;
+  }
+  .mod-spm[data-spmid='789']{
+     width: 100px;
+     height: 100px;
+     margin-right: auto;
+     margin-left: auto;
+     margin-bottom: 20px;
+     background-color: #fff;
+     border: 2px #000 solid;
+  }
+
+
+function ShowStayTime(obj) {
+  this.obj = obj;
+  this.totalTime = 0;
+  this.enterTime = null;
+  this.divTime = document.createElement("div");
+}
+ShowStayTime.prototype = {
+  constructor: ShowStayTime,
+  init: function() {
+    this.showStayTime();
+    this.obj.appendChild(this.divTime);
+    this.beginTime();
+    this.leaveTime();
+  },
+  showStayTime: function() {
+    var message = "";
+    message = "停留时间" + this.totalTime + "ms";
+    this.divTime.innerText = message;
+  },
+  beginTime: function() {
+    this.obj.addEventListener("mouseenter", function() {
+      this.enterTime = new Date();
+    });
+  },
+  leaveTime: function() {
+    var temp = this;
+    this.obj.addEventListener("mouseleave", function() {
+      temp.totalTime += new Date().getTime() - this.enterTime.getTime();
+      temp.showStayTime();
+    });
+  }
+};
+var divs = document.getElementsByClassName("mod-spm");
+var show1 = new ShowStayTime(divs[0]);
+var show2 = new ShowStayTime(divs[1]);
+var show3 = new ShowStayTime(divs[2]);
+show1.init();
+show2.init();
+show3.init();

@@ -1,0 +1,15 @@
+Knockout使用MVVM模式，ko一个页面只能用一个viewmodel。
+该框架有三大特性：
+    1、观察者和依赖跟踪；
+    2、声明绑定；
+    3、模板。
+1、在js中定义一个模型myViewModel，myViewModel可以是对象也可以是实例，程序中的数据都是存储在Model中的；
+    2、在视图中声明绑定。在视图中通过在HTML标签上添加data-bind属性配合Knockoutjs的绑定方法；
+    3、最后通过ko.applyBindings(myViewModel)将定义的myViewModel与视图中声明的绑定关联到一起。
+在JS代码中声明一个ViewData的构造函数，然后把这个构造函数的实例传给ko.applyBindings()这个方法，实现view和appViewModel的绑定。
+在html标签上使用data-bind="text:hello"来实现和viewmodel中数据的绑定。
+viewmodel中的属性仅仅只是无格式的JavaScript字符串，当属性发生变化的时候，并没有办法通知任何人发生了变化，因此还是静态UI。
+实现双向数据绑定
+当viewmodel中的属性被observable化了之后，他们就被变成了一个函数，当需要使用它们的时候，需要采用函数调用的方式。
+一个ko中的常用方法，ko.computed(func,thisObj)，这个方法有两个参数，第一个就是执行的函数，第二个就是传入的对象，改变作用域用的，类似于js中的call。
+如果只需要单独对一个对象的变化进行监听我们可以使用ko.observable，如果需要对一个集合的变化进行监听那就需要使用ko.observableArray

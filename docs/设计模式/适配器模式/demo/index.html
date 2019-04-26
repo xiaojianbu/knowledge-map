@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Adapter Pattern</title>
+  <link rel="stylesheet" href="../../statics/css/style.css">
+</head>
+
+<body>
+  <div id="source">
+    <h2>Source</h2>
+    <pre>
+      import MallardDuck from './MallardDuck'
+      import WildTurkey from './WildTurkey'
+      import TurkeyAdapter from './TurkeyAdapter'
+
+      let oMallardDuck = new MallardDuck()
+      let oWildTurkey = new WildTurkey()
+      let oTurkeyAdapter = new TurkeyAdapter(oWildTurkey)
+
+      oMallardDuck.fly()
+      oMallardDuck.quack()
+
+      oWildTurkey.fly()
+      oWildTurkey.gobble()
+
+      oTurkeyAdapter.fly()
+      oTurkeyAdapter.quack()
+    </pre>
+  </div>
+
+  <div id="console">
+    <h2>Console</h2>
+    <ul></ul>
+    <h1>ADAPTER</h1>
+  </div>
+
+  <script src="../../statics/js/utils.js"></script>
+  <script src="./js/main.js"></script>
+</body>
+
+</html>
