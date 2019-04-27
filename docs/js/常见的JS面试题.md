@@ -866,6 +866,42 @@ function sumStrings(a, b) {
 }
 ```
 
+```js
+function add(a, b) {
+  let lenA = a.length,
+    lenB = b.length,
+    len = lenA > lenB ? lenA : lenB
+
+  // 先补齐位数一致
+  if (lenA > lenB) {
+    for (let i = 0; i < lenA - lenB; i++) {
+      b = '0' + b
+    }
+  } else {
+    for (let i = 0; i < lenB - lenA; i++) {
+      a = '0' + a
+    }
+  }
+
+  let arrA = a.split('').reverse(),
+    arrB = b.split('').reverse(),
+    arr = [],
+    carryAdd = 0
+
+  for (let i = 0; i < len; i++) {
+    let temp = Number(arrA[i]) + Number(arrB[i]) + carryAdd
+    arr[i] = temp > 9 ? temp - 10 : temp
+    carryAdd = temp >= 10 ? 1 : 0
+  }
+
+  if (carryAdd === 1) {
+    arr[len] = 1
+  }
+
+  return arr.reverse().join('')
+}
+```
+
 ## 判断变量类型
 
 使用`typeof`和`instanceof`的弊端：
@@ -1439,8 +1475,6 @@ show3.init()
 
 ## 用二分查找实现  `indexOf`  方法，不允许用递归
 
-## input 查询命中并自动填充
-
 ## Object.defineProperty()和 {} 出来的对象有什么区别
 
 ## 数组有一个 length 字段，每个 api 操作 length 字段都会改变，你觉得如果让你来实现这个字段，你认为怎么处理是最优的方案
@@ -1548,3 +1582,7 @@ setTimeout(() => {
 }, 1000)
 while (new Date() - date < 3000) {}
 ```
+
+## 实现一个 div 滑动的动画，由快至慢 5s 结束（不准用 css3)。
+
+## 页面内有一个 input 输入框，实现在数组 arr 查询命中词并要求 autocomplete 效果。
