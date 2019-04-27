@@ -53,12 +53,12 @@ JWT 还需要一个头部，头部用于描述关于该 JWT 的最基本的信�
 
 ## Token 的工作原理
 
-1.  登录时候,客户端通过用户名与密码请求登录
-2.  服务端收到请求区验证用户名与密码
-3.  验证通过,服务端会签发一个 Token,再把这个 Token 发给客户端.
-4.  客户端收到 Token,存储到本地,如 Cookie,SessionStorage,LocalStorage.我们是存在 SessionStorage
-5.  客户端每次像服务器请求 API 接口时候,都要带上 Token.
-6.  服务端收到请求,验证 Token,如果通过就返回数据,否则提示报错信息.
+1. 登录时候,客户端通过用户名与密码请求登录
+2. 服务端收到请求区验证用户名与密码
+3. 验证通过,服务端会签发一个 Token,再把这个 Token 发给客户端.
+4. 客户端收到 Token,存储到本地,如 Cookie,SessionStorage,LocalStorage.我们是存在 SessionStorage
+5. 客户端每次像服务器请求 API 接口时候,都要带上 Token.
+6. 服务端收到请求,验证 Token,如果通过就返回数据,否则提示报错信息.
 
 ## 来源资料
 
