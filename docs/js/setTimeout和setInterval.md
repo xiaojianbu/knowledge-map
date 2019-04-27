@@ -32,6 +32,25 @@ JavaScript 中没有任何代码是立即执行的，但一旦进程空闲则尽
 
 ## 用 setTimeout()方法来模拟 setInterval()与 setInterval()之间的什么区别？
 
+```js
+// 使用 setTimeout 实现 setInterval 功能
+
+function mySetInterval(fn, ms, count) {
+  function interval() {
+    if (typeof count === 'undefined' || count-- > 0) {
+      setTimeout(interval, ms)
+      try {
+        fn()
+      } catch (e) {
+        count = 0
+        throw e.toString()
+      }
+    }
+  }
+  setTimeout(interval, ms)
+}
+```
+
 首先来看 setInterval 的缺陷，使用 setInterval()创建的定时器确保了定时器代码规则地插入队列中。这个问题在于：如果定时器代码在代码再次添加到队列之前还没完成执行，结果就会导致定时器代码连续运行好几次。而之间没有间隔。不过幸运的是：javascript 引擎足够聪明，能够避免这个问题。当且仅当没有该定时器的如何代码实例时，才会将定时器代码添加到队列中。这确保了定时器代码加入队列中最小的时间间隔为指定时间。
 这种重复定时器的规则有两个问题：1.某些间隔会被跳过 2.多个定时器的代码执行时间可能会比预期小。
 
