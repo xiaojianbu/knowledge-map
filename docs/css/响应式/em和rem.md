@@ -1,1 +1,5 @@
-https://webdesign.tutsplus.com/zh-hans/tutorials/comprehensive-guide-when-to-use-em-vs-rem--cms-23984
+# em 和 rem
+
+rem 根据网页的根元素来设置字体大小
+
+em 根据 W3 标准，它们是相对于使用 em 单位的元素的字体大小。此字体大小受从父元素继承过来的字体大小，除非显式重写与一个具体单位。
