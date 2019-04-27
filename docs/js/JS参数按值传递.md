@@ -18,6 +18,21 @@ foo(value)
 console.log(value) // 1
 ```
 
+```JavaScript
+function setName(obj){
+    obj.name = 'a';
+    obj = {name:'b'}
+}
+var president = {name:'c'};
+setName(president);
+```
+
+代码执行后 president.name='a';进入 setName 函数后，obj 和 president 指向对内存中同一对象，对 obj 的修改会反应到 president 上，之后 obj 指向一个新的对象。具体的内存变化情如下图所示：
+
+![参数按值传递](https://raw.githubusercontent.com/xiaojianbu/markdownPicture/master/%E5%87%BD%E6%95%B0%E5%80%BC%E4%BC%A0%E9%80%92/%E5%87%BD%E6%95%B0%E5%80%BC%E4%BC%A0%E9%80%92.jpg)
+
 ## 参考文章
+
+[深入了解的话可以参考（call by sharing）](https://en.wikipedia.org/wiki/Evaluation_strategy#Call_by_sharing)
 
 [JavaScript 深入之参数按值传递](https://github.com/mqyqingfeng/Blog/issues/10)
