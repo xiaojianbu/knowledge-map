@@ -1,4 +1,4 @@
-# JS类数组转换为数组
+# JS 类数组转换为数组
 
 ## 什么是类数组对象
 
@@ -34,4 +34,4 @@ var arrayObj = {
 
 ## 转换为数组对象
 
-slice() 方法可以将一个类数组 (Array-like) 对象/集合转换成一个数组. 你只需要用数组原型上的 slice 方法 call 这个对象,即Array.prototype.slice.call(Array-like)。也可以简单的使用[].slice.call(Array-like)来代替。
+slice() 方法可以将一个类数组 (Array-like) 对象/集合转换成一个数组. 你只需要用数组原型上的 slice 方法 call 这个对象,即 Array.prototype.slice.call(Array-like)。也可以简单的使用[].slice.call(Array-like)来代替。
