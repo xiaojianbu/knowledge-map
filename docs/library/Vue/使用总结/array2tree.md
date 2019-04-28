@@ -25,5 +25,44 @@ function array2tree(array, parent = {id:0}, tree = []){
 }
 ```
 
+```js
+function transformArray2Tree(
+  nodes,
+  key = 'id',
+  parentKey = 'pId',
+  childKey = 'children'
+) {
+  let i
+  let l
+  if (!key || key === '' || !nodes) return []
+  let sNodes = _.cloneDeep(nodes)
+
+  if (Array.isArray(sNodes)) {
+    let r = []
+    let tmpMap = {}
+    for (i = 0, l = sNodes.length; i < l; i++) {
+      tmpMap[sNodes[i][key]] = sNodes[i]
+    }
+    for (i = 0, l = sNodes.length; i < l; i++) {
+      // eslint-disable-next-line eqeqeq
+      if (
+        tmpMap[sNodes[i][parentKey]] &&
+        sNodes[i][key] != sNodes[i][parentKey]
+      ) {
+        if (!tmpMap[sNodes[i][parentKey]][childKey]) {
+          tmpMap[sNodes[i][parentKey]][childKey] = []
+        }
+        tmpMap[sNodes[i][parentKey]][childKey].push(sNodes[i])
+      } else {
+        r.push(sNodes[i])
+      }
+    }
+    return r
+  } else {
+    return [sNodes]
+  }
+}
+```
+
 参考连接：[build-tree-array-from-flat-array-in-javascript](https://stackoverflow.com/questions/18017869/build-tree-array-from-flat-array-in-javascript)
 [https://blog.csdn.net/qq_36956154/article/details/79893876](https://blog.csdn.net/qq_36956154/article/details/79893876)
