@@ -5,25 +5,21 @@
 1. 每个组件都是 Vue 的实例。
 2. 组件共享 data 属性，当 data 的值是同一个引用类型的值时，改变其中一个会影响其他。
 
-# 前端面试题
+## vue 中的 MVVM 模式 即 Model-View-ViewModel。
 
-* Vue原理解析之Virtual Dom: https://joeray61.com/2017/02/08/Vue%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90%E4%B9%8BVirtual-Dom/
-  [Vue原理解析之Virtual Dom](https://joeray61.com/2017/02/08/Vue%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90%E4%B9%8BVirtual-Dom/)
+Vue 是以数据为驱动的，Vue 自身将 DOM 和数据进行绑定，一旦创建绑定，DOM 和数据将保持同步，每当数据发生变化，DOM 会跟着变化。
+ViewModel 是 Vue 的核心，它是 Vue 的一个实例。Vue 实例时作用域某个 HTML 元素上的，这个 HTML 元素可以是 body，也可以是某个 id 所指代的元素。
+DOM Listeners 和 Data Bindings 是实现双向绑定的关键。DOM Listeners 监听页面所有 View 层 DOM 元素的变化，当发生变化，Model 层的数据随之变化；
+Data Bindings 监听 Model 层的数据，当数据发生变化，View 层的 DOM 元素随之变化。
 
-```
-1.vue中的MVVM模式  即Model-View-ViewModel。  
-Vue是以数据为驱动的，Vue自身将DOM和数据进行绑定，一旦创建绑定，DOM和数据将保持同步，每当数据发生变化，DOM会跟着变化。  
-ViewModel是Vue的核心，它是Vue的一个实例。Vue实例时作用域某个HTML元素上的，这个HTML元素可以是body，也可以是某个id所指代的元素。 
-DOM Listeners和Data Bindings是实现双向绑定的关键。DOM Listeners监听页面所有View层DOM元素的变化，当发生变化，Model层的数据随之变化；
-Data Bindings监听Model层的数据，当数据发生变化，View层的DOM元素随之变化。 
+2.v-show 指令，v-if 的区别 条件渲染指令，与 v-if 不同的是，无论 v-show 的值为 true 或 false，元素都会存在于 HTML 代码中；
+而只有当 v-if 的值为 true，元素才会存在于 HTML 代码中。v-show 指令只是设置了元素 CSS 的 style 值
 
-2.v-show指令，v-if的区别  条件渲染指令，与v-if不同的是，无论v-show的值为true或false，元素都会存在于HTML代码中；
-而只有当v-if的值为true，元素才会存在于HTML代码中。v-show指令只是设置了元素CSS的style值  
+3.如何让 css 只在当前组件中起作用 在每一个 vue 组件中都可以定义各自的 css，js，如果希望组件内写的 css 只对当前组件起作用，
+只需要在 style 中写入 scoped，即： `<style scoped></style>`
 
-3.如何让css只在当前组件中起作用  在每一个vue组件中都可以定义各自的css，js，如果希望组件内写的css只对当前组件起作用，
-只需要在style中写入scoped，即： <style scoped></style> 
+## vue scoped css
 
-vue scoped css
 使用 scoped 后，父组件的样式将不会渗透到子组件中。
 
 不过一个子组件的根节点会同时受其父组件的 scoped CSS 和子组件的 scoped CSS 的影响。这样设计是为了让父组件可以从布局的角度出发，调整其子组件根元素的样式
@@ -32,47 +28,54 @@ vue scoped css
 
 如果你希望 scoped 样式中的一个选择器能够作用得“更深”，例如影响子组件，你可以使用 >>> 操作符：
 
-
-
+```css
 <style scoped>
 .a >>> .b { /* ... */ }
 </style>
-上述代码将会编译成：
-
-
-
-.a[data-v-f3f3eg9] .b { /* ... */ }
-
-4.指令keep-alive  在vue-router写着keep-alive，
-keep-alive的含义： 如果把切换出去的组件保留在内存中，可以保留它的状态或避免重新渲染。
-为此可以添加一个keep-alive指令  <component :is='curremtView' keep-alive></component> 5.Vuejs组件 
-vuejs构建组件使用  Vue.component('componentName',{ /*component*/ })；  
-这里注意一点，组件要先注册再使用  Vue.component('mine',{           
-template:'#mineTpl',            
-props:['name','title','city','content']        
-});   
-var v=new Vue({       
-el:'#vueInstance',
-data:{           
-name:'zhang',            
-title:'this is title',          
-city:'Beijing',           
-content:'these are some desc about Blog'     
-} });  
-6.路由嵌套  路由嵌套会将其他组件渲染到该组件内，而不是进行整个页面跳转router-view本身就是将组件渲染到该位置，想要进行页面跳转，
-就要将页面渲染到根组件，在起始配置路由时
-
 ```
 
-vue根目录下的index.html中的id="app"与src目录下的App.vue中的id="app"为什么不会冲突?
+上述代码将会编译成：
+
+```css
+.a[data-v-f3f3eg9] .b {
+  /* ... */
+}
+```
+
+## 指令 keep-alive 在 vue-router 写着 keep-alive，
+
+keep-alive 的含义： 如果把切换出去的组件保留在内存中，可以保留它的状态或避免重新渲染。
+为此可以添加一个 keep-alive 指令 <component :is='curremtView' keep-alive></component>
+
+## Vuejs 组件
+
+vuejs 构建组件使用 Vue.component('componentName',{ /_component_/ })；
+这里注意一点，组件要先注册再使用 Vue.component('mine',{
+template:'#mineTpl',
+props:['name','title','city','content']
+});
+var v=new Vue({
+el:'#vueInstance',
+data:{
+name:'zhang',
+title:'this is title',
+city:'Beijing',
+content:'these are some desc about Blog'
+} });
+
+## 路由嵌套 路由嵌套会将其他组件渲染到该组件内，而不是进行整个页面跳转 router-view 本身就是将组件渲染到该位置，想要进行页面跳转，
+
+就要将页面渲染到根组件，在起始配置路由时
+
+## vue 根目录下的 index.html 中的 id="app"与 src 目录下的 App.vue 中的 id="app"为什么不会冲突?
 
 浏览器首先载入 index.html，里面有个 <div id="app"> JS 被加载，开始执行 Vue 实例初始化，根据用户定义，这个实例会被挂载到 #app 这个元素上（也就是 el 属性定义的） 挂载后的元素会替换原先的挂载点，实例模板里怎么定义了根元素，挂载后就是怎么样的元素 你可以看到，其实那个 #app 只是为了能让 Vue 找到确切的挂载位置，它的值是什么其实不重要，也和挂载后的逻辑无关（除非你的业务逻辑里有 document.getElementById('app') 之类的）。
 
+## Vue 浏览器回退记住位置
 
-# Vue 浏览器回退记住位置
-* 路由设置
+- 路由设置
 
-要使用这一功能，首先需要开启 `vue-router` 的 `history` 模式<br />滚动行为具体设置如下:
+要使用这一功能，首先需要开启  `vue-router`  的  `history`  模式<br />滚动行为具体设置如下:
 
 ```javascript
 const router = new VueRouter({
@@ -87,55 +90,54 @@ const router = new VueRouter({
     routes: [...]
   })
 ```
-<a name="1c95995b"></a>
-# 引入图片
+
+## 引入图片
+
 通过 v-bind 指令动态绑定本地图片资源无法显示问题。 场景：通过变量保存图片的 src 路径，或者在 v-for 中循环显示图片。
 
-```
+```text
 imgUrl : './test.png'
 
 <img :src='imgUrl' />  // 此时webpack只会把它当做字符串处理从而找不到图片地址(即不会对该图片进行打包)，无法正确引用该本地图片
 ```
+
 解决方法:
-```
+
+```ext
 1、将静态资源图片放在src同级别的static文件夹中。  webpack将static文件夹中的内容拷贝到项目运行的根目录下。不会编译与压缩
 2、imgUrl: "require('./test.png')" ，该方法会将图片转成base64存在内存中
 3、import avatar from './logo.png'
      imgUrl : avatar
 ```
-<a name="959759bb"></a>
-# filter 过滤器
-在 `src` 下新建 `filters` 文件夹, 创建 `index.js`, 案例如下
+
+## filter 过滤器
+
+在  `src`  下新建  `filters`  文件夹, 创建  `index.js`, 案例如下
 
 ```javascript
 // 金钱格式化
 const digitsRE = /(\d{3})(?=\d)/g
 
-export function currency (value, currency, decimals) {
+export function currency(value, currency, decimals) {
   value = parseFloat(value)
   if (!isFinite(value) || (!value && value !== 0)) return ''
   currency = currency != null ? currency : '$'
   decimals = decimals != null ? decimals : 2
   var stringified = Math.abs(value).toFixed(decimals)
-  var _int = decimals
-    ? stringified.slice(0, -1 - decimals)
-    : stringified
+  var _int = decimals ? stringified.slice(0, -1 - decimals) : stringified
   var i = _int.length % 3
-  var head = i > 0
-    ? (_int.slice(0, i) + (_int.length > 3 ? ',' : ''))
-    : ''
-  var _float = decimals
-    ? stringified.slice(-1 - decimals)
-    : ''
+  var head = i > 0 ? _int.slice(0, i) + (_int.length > 3 ? ',' : '') : ''
+  var _float = decimals ? stringified.slice(-1 - decimals) : ''
   var sign = value < 0 ? '-' : ''
-  return sign + currency + head +
-    _int.slice(i).replace(digitsRE, '$1,') +
-    _float
+  return (
+    sign + currency + head + _int.slice(i).replace(digitsRE, '$1,') + _float
+  )
 }
 ```
-* 使用
 
-在 `main.js` 中注入
+- 使用
+
+在  `main.js`  中注入
 
 ```javascript
 import * as filters from './filters'
@@ -145,17 +147,19 @@ Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
 ```
+
 在组件中使用:
+
 ```html
 <span>{{timestamp | currency}}</span>
 ```
 
-登录跳转
+## 登录跳转
+
 需要登录访问项目
 找到 main.js 添加 router.beforeEach 案例如下:
 
-
-
+```js
 // 引入路由
 import router from './router'
 
@@ -165,7 +169,7 @@ router.beforeEach((to, from, next) => {
   const isLogin = window.sessionStorage.getItem('isLogin')
   // 未登录则跳转登录
   if (!isLogin && to.name !== 'login') {
-    next({ path: '/', query: { from: to.fullPath }})
+    next({ path: '/', query: { from: to.fullPath } })
   } else {
     next()
   }
@@ -180,23 +184,25 @@ new Vue({
   },
   template: '<App/>'
 })
-权限设置
+```
+
+## 权限设置
+
 根据后台接口返回, 给项目按钮设置权限
 
 配置权限
 在 main.js 中添加指令, 这里增加了个 指令 叫 has, 案例如下
 
-
-
+```js
 import Vue from 'vue'
 
 /** 权限指令 **/
 Vue.directive('has', {
-  bind: function (el, binding) {
-    if (!Vue.prototype.$_has(binding.value)) {
-      el.parentNode.removeChild(el)
-    }
-  }
+bind: function (el, binding) {
+if (!Vue.prototype.\$\_has(binding.value)) {
+el.parentNode.removeChild(el)
+}
+}
 })
 
 // 权限检查方法
@@ -216,3 +222,14 @@ Vue.prototype.$_has = function (value) {
   }
   return isExist
 }
+```
+
+## 父组件调用子组件的方法，父组件给子组件添加方法，父组件改子组件的样式，父组件怎么给子组件传一个带\$的参数，子组件向父组件声明自己存在
+
+## vue 中在哪个阶段进行异步请求比较合适
+
+## vue 中 vuex 的 mapSetter 是怎么实现的
+
+## vue 项目中使用到的优化手段
+
+## vue 中写一个组件要注意哪些
