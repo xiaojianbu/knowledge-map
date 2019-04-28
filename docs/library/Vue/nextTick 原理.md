@@ -1,18 +1,14 @@
-1. nextTick
-在下次dom更新循环结束之后执行延迟回调，可用于获取更新后的dom状态
+# nextTick
 
+在下次 dom 更新循环结束之后执行延迟回调，可用于获取更新后的 dom 状态
 
-新版本中默认是microtasks, v-on中会使用macrotasks
+新版本中默认是 microtasks, v-on 中会使用 macrotasks
 
-
-macrotasks任务的实现:
+macrotasks 任务的实现:
 
 setImmediate / MessageChannel / setTimeout
 
-
-
-nextTick 可以让我们在下次 DOM 更新循环结束之后执行延迟回调，用于获得更新后的 DOM。
-
+```js
 if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
   macroTimerFunc = () => {
     setImmediate(flushCallbacks)
@@ -35,4 +31,4 @@ if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
     setTimeout(flushCallbacks, 0)
   }
 }
-
+```
