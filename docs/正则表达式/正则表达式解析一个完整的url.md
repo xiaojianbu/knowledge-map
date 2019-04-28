@@ -22,7 +22,6 @@
  * @return {Object} 包含url信息的对象
  */
 
-
  function parseUrl(url) {
     var result = {};
     var keys = ['href', 'origin', 'protocol', 'host',
@@ -44,7 +43,7 @@
 
 parseUrl("http://test.com:8080?name=1&password=2#page1");
 
-结果：
+// 结果：
 match=[
   'http://test.com:8080?name=1&password=2#page1',
   'http://test.com:8080',
