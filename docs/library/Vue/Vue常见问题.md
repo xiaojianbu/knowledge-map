@@ -20,6 +20,9 @@ Data Bindings 监听 Model 层的数据，当数据发生变化，View 层的 DO
 
 ## vue scoped css
 
+1. 给 HTML 的 dom 节点添加一个不重复的 data 属性(例如: data-v-5558831a)来唯一标识这个 dom 元素
+2. 在每句 css 选择器的末尾(编译后生成的 css 语句)加一个当前组件的 data 属性选择器(例如：[data-v-5558831a])来私有化样式
+
 使用 scoped 后，父组件的样式将不会渗透到子组件中。
 
 不过一个子组件的根节点会同时受其父组件的 scoped CSS 和子组件的 scoped CSS 的影响。这样设计是为了让父组件可以从布局的角度出发，调整其子组件根元素的样式
