@@ -79,6 +79,24 @@ class BuildEndPlugin {
 module.exports = BuildEndPlugin
 ```
 
+## 常用发插件
+
+### html-webpack-plugin
+
+构建时 html-webpack-plugin 会为我们创建一个 HTML 文件，其中会引用构建出来的 JS 文件。实际项目中，默认创建的 HTML 文件并没有什么用，我们需要自己来写 HTML 文件，可以通过 html-webpack-plugin 的配置，传递一个写好的 HTML 模板：
+
+```js
+module.exports = {
+  // ...
+  plugins: [
+    new HtmlWebpackPlugin({
+      filename: 'index.html', // 配置输出文件名和路径
+      template: 'assets/index.html' // 配置文件模板
+    })
+  ]
+}
+```
+
 ## 参考
 
 - [webpack-plugin](https://webpack.docschina.org/concepts/plugins/#%E5%89%96%E6%9E%90)
