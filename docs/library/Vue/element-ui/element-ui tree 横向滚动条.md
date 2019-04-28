@@ -17,4 +17,10 @@ tree 中 label 过长或者 children 层级过多，横向滚动不显示
 }
 ```
 
-参考链接：[issue1 ](https://github.com/ElemeFE/element/issues/4456)[issue2](https://github.com/ElemeFE/element/issues/4944) [issue3](https://github.com/ElemeFE/element/issues/2745)
+参考链接：
+
+[issue1](https://github.com/ElemeFE/element/issues/4456)
+
+[issue2](https://github.com/ElemeFE/element/issues/4944)
+
+[issue3](https://github.com/ElemeFE/element/issues/2745)
