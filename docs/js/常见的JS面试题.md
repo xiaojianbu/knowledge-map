@@ -6,6 +6,18 @@
 
 [知识面经汇总](https://github.com/CodingMeUp/some_notes)
 
+## JavaScript 是一种弱类型语言，它分别有什么优点和缺点？
+
+## 本地、预发和线上三套环境，如何进行无痕切换？
+
+## 如果开发时接口有变动，线上数据暂未产出，本地 mock 接口如何快速响应？
+
+## 页面回退 Session 和 Token 失效如何处理？
+
+## 开局问：原生 xhr 怎么写？
+
+答：创建一个 xhr 对象，readystate onload send open blabla 接着问：怎么处理回调？答：status 等于 200 且 readystate 等于 4 的时候，取 responseText 处理。接下来开启 http 协议分支任务问：http 状态码常见有哪些？答：200，302，304，404，5xx 问：302 是啥？304 是啥？什么时候会返回 304？你刚刚说浏览器缓存，具体缓存机制是怎么样的？答：…问：你刚刚说的是发起一个 get 请求，除此之外 http method 还有哪些？答：常用的还有 post，put，delete 等。问：post 跟 get 有啥区别？答：…http 分支聊得差不多啦，回主线，进入跨域和 web 前端安全分支。问：http 聊的差不多啦，我们回到 xhr，你知道同源策略么？答：同协议，同端口，同域名问：怎么跨域发起请求答：cors，jsonp 等接下来聊聊，cors 的细节，jsonp 的原理。再接下来聊聊其他跨域的方案，postmessage，document.domain 降域接下来就着同源策略，跟面试者聊聊 cookie，问题往 csrf 上走，csrf 是啥，怎么防。顺着 csrf，聊聊 xss，概念，怎么防？跨域和安全聊完，跟面试者聊聊模块化。
+
 ## ["1", "2", "3"].map(parseInt)
 
 [从一道坑人的面试题说函数式编程](https://www.h5jun.com/post/parseInt-to-functional.html)
