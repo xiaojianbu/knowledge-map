@@ -25,4 +25,21 @@ externals: {
 import Handsontable from 'Handsontable '
 ```
 
+## vue.config.js
+
+```js
+configureWebpack: {
+  resolve: {
+    alias: {
+      'jquery': resolve('static/leaflet.js')
+    }
+  },
+  plugins: [
+    new webpack.ProvidePlugin({
+      L: 'leaflet'
+    })
+  ]
+}
+```
+
 参考来源：[Vue 中如何引入第三方 JS 库](https://blog.csdn.net/csdn_yudong/article/details/78795743)
