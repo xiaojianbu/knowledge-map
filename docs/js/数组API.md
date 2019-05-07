@@ -946,6 +946,44 @@ console.log(iterator.next().value) // 1
 console.log(iterator.next().value) // 2
 ```
 
+## reduce 实现 filter,map
+
+### reduce 实现 map
+
+```js
+if (Array.prototype._map === undefined) {
+  Array.prototype._map = function(cb) {
+    if (typeof cb === 'function') {
+      return this.reduce((prev, item, index, arr) => {
+        prev.push(cb(item, index, arr))
+        return prev
+      }, [])
+    } else {
+      console.log(new Error('callback is not function'))
+    }
+  }
+}
+let val = [1, 5, 6]._map(item => item + 1)
+console.log(val) // [2, 6, 7]
+```
+
+### reduce 实现 filter
+
+```js
+Array.prototype._filter = function(callback) {
+  if (typeof callback === 'function') {
+    return this.reduce((prev, item, index, arr) => {
+      callback(item, index, arr) ? prev.push(item) : null
+      return prev
+    }, [])
+  } else {
+    console.log(new Error('callback is not function'))
+  }
+}
+let val = [1, 5, 6]._filter(item => item > 2)
+console.log(val) // [5, 6]
+```
+
 ## 总结
 
 - 所有插入元素的方法, 比如 push、unshift，一律返回数组新的长度；
