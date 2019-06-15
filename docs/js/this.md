@@ -90,3 +90,40 @@ Foo.call(o)
 ## 作为一个内联事件处理函数
 
 当代码被内联 on-event 处理函数调用时，它的 this 指向监听器所在的 DOM 元素
+
+## 题目
+
+```js
+var obj = {
+  hi: function() {
+    console.log(this)
+    return () => {
+      console.log(this)
+    }
+  },
+  sayHi: function() {
+    return function() {
+      console.log(this)
+      return () => {
+        console.log(this)
+      }
+    }
+  },
+  see: function() {
+    console.log(this)
+    ;(function() {
+      console.log(this)
+    })()
+  },
+  say: () => {
+    console.log(this)
+  }
+}
+let hi = obj.hi() // obj
+hi() // obj
+let sayHi = obj.sayHi()
+let fun1 = sayHi() // window
+fun1() // window
+obj.say() // window
+obj.see() // obj window
+```
