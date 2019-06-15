@@ -143,6 +143,8 @@
    }
    ```
 
+   比上一个好：重绘重排 translate3d 的元素进行 GPU 加速。
+
 5. 多行不定高
 
    对于多行的内联元素，通过添加等值的 padding-top 和 padding-bottom 实现
