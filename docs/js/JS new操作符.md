@@ -1,6 +1,13 @@
 # JS new 操作符
 
 ```js
+/* 选自 yck 文章 */
+function create(Con, ...args) {
+  let obj = {}
+  Object.setPrototypeOf(obj, Con.prototype)
+  let result = Con.apply(obj, args)
+  return result instanceof Object ? result : obj
+}
 function _new(fun) {
   return function() {
     let obj = {
