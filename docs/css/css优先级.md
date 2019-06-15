@@ -26,3 +26,7 @@
 !important > id > class > tag
 
 important 比 内联优先级高
+
+1. 越具体优先级越高
+2. 后写的会覆盖先写的
+3. important 最高
