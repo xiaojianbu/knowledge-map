@@ -16,6 +16,7 @@ xhr.onreadystatechange = function() {
 xhr.open('GET', 'xxxx')
 // 如何设置请求头? xhr.setRequestHeader(header, value);
 xhr.setRequestHeader('Content-Type', 'application/json')
+xhr.send(null)
 ```
 
 ## XMLHttpRequest
