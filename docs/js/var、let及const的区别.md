@@ -28,6 +28,8 @@ const deepFreeze = function(obj) {
 }
 ```
 
+const 和 Object.freeze()并不同，const 是防止变量重新分配，而 Object.freeze()是使对象具有不可变性。
+
 let 和 const 不能重复声明：如果一个变量已经在作用域中定义了，然后在这个作用域中再使用 let 声明这个变量，会抛出一个异常。
 
 每个 const 变量必须在声明时赋值
