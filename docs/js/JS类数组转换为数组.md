@@ -34,4 +34,18 @@ var arrayObj = {
 
 ## 转换为数组对象
 
+第一种
+
 slice() 方法可以将一个类数组 (Array-like) 对象/集合转换成一个数组. 你只需要用数组原型上的 slice 方法 call 这个对象,即 Array.prototype.slice.call(Array-like)。也可以简单的使用[].slice.call(Array-like)来代替。
+
+第二种
+
+任何定义了遍历器（Iterator）接口的对象，都可以用扩展运算符转为真正的数组
+
+[...arrayLike]
+
+第三种
+
+Array.from 方法用于将两类对象转为真正的数组：类似数组的对象（array-like object）和可遍历（iterable）的对象。
+
+Array.from(arrayLike)
