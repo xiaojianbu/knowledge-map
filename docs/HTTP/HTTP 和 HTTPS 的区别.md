@@ -11,3 +11,7 @@ HTTPS 和 HTTP 的区别主要如下：
 3、http 和 https 使用的是完全不同的连接方式，用的端口也不一样，前者是 80，后者是 443。
 
 4、http 的连接很简单，是无状态的；HTTPS 协议是由 SSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，比 http 协议安全。
+
+HTTPS 建立连接
+
+[HTTPS 建立连接](https://juejin.im/post/5aab7f8af265da23a40492cc)
