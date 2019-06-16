@@ -8,15 +8,18 @@
 
 ## JavaScript 是一种弱类型语言，它分别有什么优点和缺点？
 
-## 本地、预发和线上三套环境，如何进行无痕切换？
+所谓弱类型指的是定义变量时，不需要什么类型，在程序运行过程中会自动判断类型。
 
-## 如果开发时接口有变动，线上数据暂未产出，本地 mock 接口如何快速响应？
+## 本地、预发和线上三套环境，如何进行无痕切换？ 如果开发时接口有变动，线上数据暂未产出，本地 mock 接口如何快速响应？
+
+- 线上测试，本地反向代理到预发或者线上环境；
+- 本地测试，则使用 apache 开启服务提供 mock 接口
+
+https://www.cnblogs.com/hustskyking/p/donnot-repeat-yourself.html
 
 ## 页面回退 Session 和 Token 失效如何处理？
 
-## 开局问：原生 xhr 怎么写？
-
-答：创建一个 xhr 对象，readystate onload send open blabla 接着问：怎么处理回调？答：status 等于 200 且 readystate 等于 4 的时候，取 responseText 处理。接下来开启 http 协议分支任务问：http 状态码常见有哪些？答：200，302，304，404，5xx 问：302 是啥？304 是啥？什么时候会返回 304？你刚刚说浏览器缓存，具体缓存机制是怎么样的？答：…问：你刚刚说的是发起一个 get 请求，除此之外 http method 还有哪些？答：常用的还有 post，put，delete 等。问：post 跟 get 有啥区别？答：…http 分支聊得差不多啦，回主线，进入跨域和 web 前端安全分支。问：http 聊的差不多啦，我们回到 xhr，你知道同源策略么？答：同协议，同端口，同域名问：怎么跨域发起请求答：cors，jsonp 等接下来聊聊，cors 的细节，jsonp 的原理。再接下来聊聊其他跨域的方案，postmessage，document.domain 降域接下来就着同源策略，跟面试者聊聊 cookie，问题往 csrf 上走，csrf 是啥，怎么防。顺着 csrf，聊聊 xss，概念，怎么防？跨域和安全聊完，跟面试者聊聊模块化。
+https://segmentfault.com/a/1190000017304793
 
 ## ["1", "2", "3"].map(parseInt)
 
@@ -58,11 +61,11 @@ obj.method(fn, 123)
 
 对于 method 里面 fn 的理解， fn 是传参传出来的，这里 fn 的执行属于函数调用模式，this 就代表是全局对象 window
 
-对 arguments[0]() 的理解:
+对 arguments\[0\]() 的理解:
 
-arguments 这个伪数组对象存的传入的参数， arguments 也就是可以理解为 [fn,123,345..,...,] ,传入的参数组成数组,arguments[0]() 属于方法调用模式，this 代表调用者，所以 this 代表 arguments ，执行 arguments[0]()也就是 arguments.fn(), this.length 代表 arguments 参数的个数
+arguments 这个伪数组对象存的传入的参数， arguments 也就是可以理解为 [fn,123,345..,...,] ,传入的参数组成数组,arguments\[0\]\(\) 属于方法调用模式，this 代表调用者，所以 this 代表 arguments ，执行 arguments[0]()也就是 arguments.fn(), this.length 代表 arguments 参数的个数
 
-## 以下代码输出什么? 为什么?
+## 以下代码输出什么? 为什么
 
 ```js
 var a = { n: 1 }
@@ -225,7 +228,7 @@ object1 和 object2 都是对象，所以运算的时候会调用 valueOf 方法
 
 所以结果是 2
 
-## 以下代码输出什么?为什么?
+## 以下代码输出什么?
 
 ```js
 function swap(x, y) {
@@ -853,6 +856,37 @@ a.splice.apply(a, [index, 0].concat(b))
 ## 字符串（大数字）计算相加并转换成字符串
 
 ```js
+const s1 = '712569312664357328695151392'
+const s2 = '8100824045303269669937'
+
+// 将字符串倒序并输出数值数组
+function strToArrRvs(str) {
+  return str
+    .split('')
+    .map(x => +x)
+    .reverse()
+}
+
+function addStr(a, b) {
+  const [h, l] = (a.length > b.length ? [a, b] : [b, a]).map(strToArrRvs)
+  // 用相对位数更多的字符串调用reduce
+  return h.reduce(
+    ([digit, tail], cur, idx, arr) => {
+      const sum = cur + digit + (l[idx] || 0)
+      // 如果遍历完成 直接输出结果, 否则输出数组用于下一次迭代
+      return idx === arr.length - 1
+        ? sum + tail
+        : [+(sum >= 10), (sum % 10) + tail]
+    },
+    [0, '']
+  )
+}
+
+addStr('712569312664357328695151392', '8100824045303269669937')
+// "712577413488402631964821329"
+```
+
+```js
 String.prototype.reverse = function() {
   return this.split('')
     .reverse()
@@ -918,13 +952,19 @@ function add(a, b) {
 
 使用`typeof`和`instanceof`的弊端：
 
+typeof 能够正确的判断基本数据类型，但是除了 null, typeof null 输出的是对象。但是对象来说，typeof 不能正确的判断其类型， typeof 一个函数可以输出 'function',而除此之外，输出的全是 object,这种情况下，我们无法准确的知道对象的类型。
+
+typeof Symbol() 用 typeof 获取 symbol 类型的值得到的是 symbol
+
+instanceof 可以准确的判断复杂数据类型，但是不能正确判断基本数据类型。
+
 ```javascript
 let obj = {}
 let arr = []
 
 console.log(typeof obj === 'object') // true
 console.log(typeof arr === 'object') // true
-console.log(typeod null === 'object') // true
+console.log(typeof null === 'object') // true
 ```
 
 使用  `Object.prototype.toString.call([]) === "[object Array]"` 来进行判断。
@@ -1012,22 +1052,45 @@ new Foo().getName() //3
 new new Foo().getName() //3
 ```
 
+```js
+// 代码编译后如下
+function Foo() {
+  getName = function() {
+    console.log(1)
+  }
+  return this
+}
+function getName() {
+  console.log(5)
+} //函数优先(函数首先被提升)
+var getName //重复声明，被忽略
+Foo.getName = function() {
+  console.log(2)
+}
+Foo.prototype.getName = function() {
+  console.log(3)
+}
+getName = function() {
+  console.log(4)
+}
+```
+
 1. 访问 Foo 函数上存储的静态属性；
 2. 直接调用 getName 函数，变量声明提升，函数表达式；
 3. 第三问的  Foo().getName();  先执行了 Foo 函数，然后调用 Foo 函数的返回值对象的 getName 属性函数。
 
-Foo 函数的第一句   getName = function () { alert (1); };  是一句函数赋值语句，注意它没有 var 声明，所以先向当前 Foo 函数作用域内寻找 getName 变量，没有。再向当前函数作用域上层，即外层作用域内寻找是否含有 getName 变量；this 指向 window 对象；window 中的 getName 已经被修改为 alert(1)，所以最终会输出 1。
+   Foo 函数的第一句   getName = function () { alert (1); };  是一句函数赋值语句，注意它没有 var 声明，所以先向当前 Foo 函数作用域内寻找 getName 变量，没有。再向当前函数作用域上层，即外层作用域内寻找是否含有 getName 变量；this 指向 window 对象；window 中的 getName 已经被修改为 alert(1)，所以最终会输出 1。
 
 4. 直接调用 getName 函数，相当于  window.getName() ，输出 1。
-5. 考察 JS 的运算符优先级，表达式相当于 ` new`` (Foo.getName)() `实际上将 getName 函数作为了构造函数来执行，遂弹出 2。
+5. 考察 JS 的运算符优先级[运算符优先级](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Operator_Precedence)，表达式相当于 ` new`` (Foo.getName)() `实际上将 getName 函数作为了构造函数来执行，遂弹出 2。
 6. 表达式相当于  ` (``new`` Foo()).getName() ` ,构造函数的返回值：
 7. 没有返回值返回实例化对象。
 8. 若有返回值则检查其返回值是否为**引用类型**。如果是非引用类型，如基本类型（string,number,boolean,null,undefined）则与无返回值相同，实际返回其实例化对象。
 9. 若返回值是引用类型，则实际返回值为这个引用类型。
 
-调用实例化对象的 getName 函数，因为在 Foo 构造函数中没有为实例化对象添加任何属性，遂到当前对象的原型对象（prototype）中寻找 getName ，输出 3。
+   调用实例化对象的 getName 函数，因为在 Foo 构造函数中没有为实例化对象添加任何属性，遂到当前对象的原型对象（prototype）中寻找 getName ，输出 3。
 
-7. 表达式相当于  ` new`` ((``new`` Foo()).getName)() `  先初始化 Foo 的实例化对象，然后将其原型上的 getName 函数作为构造函数再次 new，输出 3。
+10. 表达式相当于  ` new`` ((``new`` Foo()).getName)() `  先初始化 Foo 的实例化对象，然后将其原型上的 getName 函数作为构造函数再次 new，输出 3。
 
 ## 海量数据加载
 
@@ -1057,7 +1120,7 @@ Promise.all([p]).then(v => {
 })
 ```
 
-## 基于 Localstorage 设计一个 1M 的缓存系统，需要实现缓存淘汰机制
+## 基于 localStorage 设计一个 1M 的缓存系统，需要实现缓存淘汰机制
 
 设计思路如下：
 
@@ -1505,15 +1568,29 @@ Q: 这些方法为什么会传入函数作为参数，你有想过如何实现�
 
 ## 什么是尾递归
 
-## webstoreage 如果存储满了会怎么样（报错）
+## webStorage 如果存储满了会怎么样（报错）
 
 ## 如何获取一个 div 下所有的文本节点
 
 ## 为什么不同浏览器渲染出来的东西会有差别，本质是什么
 
-## js 如何实现多线程，webworker 怎么通信
-
 ## requestAnimationFrame 和 setTimeout 写动画的区别
+
+在 requestAnimationFrame 之前，我们主要使用 setTimeout/setInterval 来编写 JS 动画。
+
+编写动画的关键是循环间隔的设置，一方面，循环间隔足够短，动画效果才能显得平滑流畅；另一方面，循环间隔还要足够长，才能确保浏览器有能力渲染产生的变化。
+
+大部分的电脑显示器的刷新频率是 60HZ，也就是每秒钟重绘 60 次。大多数浏览器都会对重绘操作加以限制，不超过显示器的重绘频率，因为即使超过那个频率用户体验也不会提升。因此，最平滑动画的最佳循环间隔是 1000ms / 60 ，约为 16.7ms。
+
+setTimeout/setInterval 有一个显著的缺陷在于时间是不精确的，setTimeout/setInterval 只能保证延时或间隔不小于设定的时间。因为它们实际上只是把任务添加到了任务队列中，但是如果前面的任务还没有执行完成，它们必须要等待。
+
+requestAnimationFrame 才有的是系统时间间隔，保持最佳绘制效率，不会因为间隔时间过短，造成过度绘制，增加开销；也不会因为间隔时间太长，使用动画卡顿不流畅，让各种网页动画效果能够有一个统一的刷新机制，从而节省系统资源，提高系统性能，改善视觉效果。
+
+综上所述，requestAnimationFrame 和 setTimeout/setInterval 在编写动画时相比，优点如下:
+
+1. requestAnimationFrame 不需要设置时间，采用系统时间间隔，能达到最佳的动画效果。
+2. requestAnimationFrame 会把每一帧中的所有 DOM 操作集中起来，在一次重绘或回流中就完成。
+3. 当 requestAnimationFrame() 运行在后台标签页时，requestAnimationFrame() 会被暂停调用以提升性能和电池寿命（大多数浏览器中）。
 
 ## 如何实现小于 12px 的字体效果
 
@@ -1585,16 +1662,317 @@ b.sleep()
   .print2()
 ```
 
-## 以下代码会输出什么(百度)
-
-```js
-var date = new Date()
-setTimeout(() => {
-  console.log(new Date() - date)
-}, 1000)
-while (new Date() - date < 3000) {}
-```
-
 ## 实现一个 div 滑动的动画，由快至慢 5s 结束（不准用 css3)。
 
 ## 页面内有一个 input 输入框，实现在数组 arr 查询命中词并要求 autocomplete 效果。
+
+## 实现一个带并发数限制的 fetch 请求函数
+
+可以批量请求数据，所有的 URL 地址在 urls 参数中，同时可以通过 max 参数控制请求的并发度，当所有请求结束之后，需要执行 callback 回调函数。
+
+```js
+const sendRequest = (urls, max, callback) => {
+  let finished = 0
+  const total = urls.length
+  const handler = () => {
+    if (urls.length) {
+      const url = urls.shift()
+      fetch(url)
+        .then(() => {
+          finished += 1
+          handler()
+        })
+        .catch(e => {
+          throw Error(e)
+        })
+    }
+    if (finished >= total) {
+      callback()
+    }
+  }
+  for (let i = 0; i < max; i++) {
+    handler()
+  }
+}
+const urls = Array.from({ length: 10 }, (v, k) => k)
+
+const fetch = function(idx) {
+  return new Promise(resolve => {
+    console.log(`start request ${idx}`)
+    const timeout = parseInt(Math.random() * 1e4)
+    setTimeout(() => {
+      console.log(`end request ${idx}`)
+      resolve(idx)
+    }, timeout)
+  })
+}
+
+const max = 4
+
+const callback = () => {
+  console.log('run callback')
+}
+
+sendRequest(urls, max, callback)
+```
+
+## 手写 parseInt 的实现
+
+```js
+{
+  function _parseInt(string, radix) {
+    if (typeof string !== 'string' && typeof string !== 'number') return NaN
+    if (
+      radix &&
+      (typeof radix !== 'number' ||
+        /^[1-9]\d*\.\d*|0\.\d*[1-9]\d*$/.test(radix) ||
+        radix > 36 ||
+        radix < 2)
+    )
+      return NaN
+    string = String(string)
+    var rexp =
+        radix == 10 ? /(-?)([0]?)([0-9]+)/ : /(-?)([0]?[Xx]?)([0-9a-fA-F]+)/,
+      a = string.match(rexp),
+      sign = a[1],
+      rawRadix = a[2],
+      rawNum = a[3],
+      result = 0,
+      strArr = rawNum.split(''),
+      len = strArr.length,
+      numArr = []
+    if (a && !radix) {
+      if (rawRadix.toUpperCase() === '0X') {
+        radix = 16
+      } else if (rawRadix === '0') {
+        radix = 8
+      } else {
+        radix = 10
+      }
+    }
+    for (var i = 0; i < len; i++) {
+      var num
+      var charCode = strArr[i].toUpperCase().charCodeAt(0)
+      if (radix <= 36 && radix >= 11) {
+        if (charCode >= 65 && charCode <= 90) {
+          num = charCode - 55
+        } else {
+          num = charCode - 48
+        }
+      } else {
+        num = charCode - 48
+      }
+      if (num < radix) {
+        numArr.push(num)
+      } else {
+        return NaN
+      }
+    }
+    if (numArr.length > 0) {
+      numArr.forEach(function(item, j) {
+        result += item * Math.pow(radix, numArr.length - j - 1)
+      })
+    }
+    if (sign === '-') {
+      result = -result
+    }
+    return result
+  }
+  // 以下例子均返回15:
+  console.log(_parseInt('F', 16))
+  console.log(_parseInt('17', 8))
+  console.log(_parseInt('15', 10))
+  console.log(_parseInt(15.99, 10))
+  console.log(_parseInt('FXX123', 16))
+  console.log(_parseInt('1111', 2))
+  console.log(_parseInt('15*3', 10))
+  console.log(_parseInt('12', 13))
+
+  // 以下例子均返回 NaN:
+  console.log(_parseInt('Hello', 8))
+  // Not a number at all
+  console.log(_parseInt('546', 2))
+  // Digits are not valid for binary representations
+
+  // 以下例子均返回 -15：
+  console.log(_parseInt('-F', 16))
+  console.log(_parseInt('-0F', 16))
+  console.log(_parseInt('-0XF', 16))
+  console.log(_parseInt(-15.1, 10))
+  console.log(_parseInt(' -17', 8))
+  console.log(_parseInt(' -15', 10))
+  console.log(_parseInt('-1111', 2))
+  console.log(_parseInt('-15e1', 10))
+  console.log(_parseInt('-12', 13))
+  // 下例中也全部返回 17，因为输入的 string 参数以 "0x" 开头时作为十六进制数字解释，而第二个参数假如经过 Number 函数转换后为 0 或 NaN，则将会忽略。
+  console.log(_parseInt('0x11', 16))
+  console.log(_parseInt('0x11', 0))
+  console.log(_parseInt('0x11'))
+
+  // 下面的例子返回 224
+  console.log(_parseInt('0e0', 16))
+}
+```
+
+## 常见的内存泄露
+
+全局变量，未清除的定时器，闭包，以及 dom 的引用等。
+
+## 实现一个函数，将给定数组[1,2,2,3,3,3,4]输出成[[2, 2], [3,3,3]](如果相邻的数字是重复的，放在一个数组里)？
+
+```js
+function fooRe(arr) {
+  return arr.reduce((h, m, i, a) => {
+    if (h.length === 0) {
+      var itemArr = []
+      itemArr.push(m)
+      h.push(itemArr)
+    } else if (h[h.length - 1].indexOf(m) > -1) {
+      h[h.length - 1].push(m)
+    } else {
+      if (h[h.length - 1].length === 1) {
+        h.splice(h.length - 1, 1)
+      }
+      if (i === a.length - 1) {
+        return h
+      }
+      var itemArr = []
+      itemArr.push(m)
+      h.push(itemArr)
+    }
+    return h
+  }, [])
+}
+```
+
+## 实现一个 person.execute().sleep(3000)过 3000ms 之后执行 execute 方法？如果没有 execute 方法直接执行 sleep 也要实现和刚才一样的效果，怎么实现？
+
+```js
+// machine('ygy').execute()
+// start ygy
+// machine('ygy').do('eat').execute();
+// start ygy
+// ygy eat
+// machine('ygy').wait(5).do('eat').execute();
+// start ygy
+// wait 5s（这里等待了5s）
+// ygy eat
+// machine('ygy').waitFirst(5).do('eat').execute();
+// wait 5s
+// start ygy
+// ygy eat
+// 和这个题类似。
+// 答案
+function machine(name) {
+  return new Person(name)
+}
+
+class Person {
+  constructor(name) {
+    this.name = name
+    this.list = ['']
+  }
+  async execute() {
+    const str = `start ${this.name}`
+    if (!this.list[0]) {
+      console.log(str)
+    } else {
+      this.list.splice(1, 0, () => {
+        return new Promise(resolve => {
+          setTimeout(() => {
+            console.log(str)
+            resolve()
+          }, 0)
+        })
+      })
+    }
+    if (this.list.length !== 0) {
+      for (let i = 0; i < this.list.length; i++) {
+        if (this.list[i]) {
+          await this.list[i]()
+        }
+      }
+    }
+  }
+  do(type) {
+    this.list.push(() => {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          console.log(`${this.name} ${type}`)
+          resolve()
+        }, 0)
+      })
+    })
+    return this
+  }
+  wait(num) {
+    this.list.push(() => {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          console.log(`wait ${num}s`)
+          resolve()
+        }, num * 1000)
+      })
+    })
+    return this
+  }
+  waitFirst(num) {
+    this.list.pop()
+    this.list.unshift(() => {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          console.log(`wait ${num}s`)
+          resolve()
+        }, num * 1000)
+      })
+    })
+    return this
+  }
+}
+function machine(name) {
+  return new Action(name)
+}
+
+const defer = (time, callback) => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(callback())
+    }, time * 1000)
+  })
+}
+class QueueItem {
+  constructor(defer, callback) {
+    this.defer = defer
+    this.callback = callback
+  }
+}
+class Action {
+  queue = []
+  constructor(name) {
+    this.name = name
+    this.queue.push(new QueueItem(0, () => console.log(`start ${this.name}`)))
+  }
+  do(eat) {
+    this.queue.push(new QueueItem(0, () => console.log(`${this.name} ${eat}`)))
+    return this
+  }
+  wait(time) {
+    this.queue.push(new QueueItem(time, () => console.log(`wait ${time}s`)))
+    return this
+  }
+  waitFirst(time) {
+    this.queue.unshift(new QueueItem(time, () => console.log(`wait ${time}s`)))
+    return this
+  }
+  async execute() {
+    while (this.queue.length > 0) {
+      const curItem = this.queue.shift()
+      if (!curItem.defer) {
+        curItem.callback()
+        continue
+      }
+      await defer(curItem.defer, curItem.callback)
+    }
+  }
+}
+```
