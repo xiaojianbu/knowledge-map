@@ -62,13 +62,20 @@ React - 本质是前端组件化框架, 由后端组件化发展而来
 Vue 和 React 区别
 
 Vue 表单支持双向绑定开发更方便
+
 改变数据方式不同，setState 有使用坑
+
 props Vue 可变，React 不可变
+
 判断是否需要更新 React 可以通过钩子函数判断，Vue 使用依赖追踪，修改了什么才渲染什么
+
 React 16 以后 有些钩子函数会执行多次
+
 React 需要使用 JSX，需要 Babel 编译。Vue 虽然可以使用模板，但是也可以通过直接编写 render 函数不需要编译就能运行。
 生态 React 相对较好
 
 ## 参考
 
 [Vue 和 React 的异同](https://surmon.me/article/116)
+
+[我用 Vue 和 React 构建了相同的应用程序，这是它们的差别](https://mp.weixin.qq.com/s/hfAsy8B_cD2JGt8VRBYwMg)
