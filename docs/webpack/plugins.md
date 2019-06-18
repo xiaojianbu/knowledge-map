@@ -1,107 +1,79 @@
 # plugins
 
-webpack 插件是一个具有 apply 方法的 JavaScript 对象。apply 属性会被 webpack compiler 调用，并且 compiler 对象可在整个编译生命周期访问。
+插件可以用于执行范围更广的任务。包括：打包优化，资源管理，注入环境变量。
 
-## 特点
+webpack 在运行的生命周期中会广播出许多事件，Plugin 可以监听这些事件，在合适的时机通过 Webpack 提供的 API 改变输出结果。
 
-先来瞅瞅 webpack 插件在项目中的运用
+## 常用的插件
 
-```js
-const MyPlugin = require('myplugin')
-const webpack = require('webpack')
+生成 HTML 文件 Html-webpack-plugin
+删除 dist 目录 clean-webpack-plugin
+压缩 css 文件 optimize-css-assets-webpack-plugin
+压缩 js 文件 uglifyjs-webpack-plugin
+复制目录插件 copyWebpackPlugin
+添加版权声明 bannerPlugin
+提取 css 文件 mini-css-extract-plugin
+DllPlugin 为了极大减少构建时间，进行分离打包
 
-webpack({
-  ...,
-  plugins: [new MyPlugin()]
-  ...,
-})
-```
-
--那么符合什么样的条件能作为 webpack 插件呢？一般来说，webpack 插件有以下特点：
-
-- 1.独立的 JS 模块，暴露相应的函数
-
-- 2.函数原型上的 apply 方法会注入 compiler 对象
-
-- 3.compiler 对象上挂载了相应的 webpack 事件钩子
-
-- 4.事件钩子的回调函数里能拿到编译后的 compilation 对象，如果是异步钩子还能拿到相应的 callback
-
-下面结合代码来看看：
+## 使用
 
 ```js
-function MyPlugin(options) {}
-// 2.函数原型上的 apply 方法会注入 compiler 对象
-MyPlugin.prototype.apply = function(compiler) {
-  // 3.compiler 对象上挂载了相应的 webpack 事件钩子 4.事件钩子的回调函数里能拿到编译后的 compilation 对象
-  compiler.plugin('emit', (compilation, callback) => {
-    ...
-  })
-}
-// 1.独立的 JS 模块，暴露相应的函数
-module.exports = MyPlugin
-```
+const HtmlWebpackPlugin = require('html-webpack-plugin') // 通过 npm 安装
+const webpack = require('webpack') // 用于访问内置插件
 
-## compiler 对象
-
-compiler 即 webpack 的编辑器对象，在调用 webpack 时，会自动初始化 compiler 对象
-
-compiler 对象中包含了所有 webpack 可配置的内容，开发插件时，我们可以从 compiler 对象中拿到所有和 webpack 主环境相关的内容。
-
-## compilation 对象
-
-compilation 对象代表了一次单一的版本构建和生成资源。  
-当运行 webpack 时，每当检测到一个文件变化，一次新的编译将被创建，从而生成一组新的编译资源。  
-一个编译对象表现了当前的模块资源、编译生成资源、变化的文件、以及被跟踪依赖的状态信息。
-
-## 如何实现一个插件
-
-调用插件 apply 函数传入 compiler 对象
-
-通过 compiler 对象监听事件
-
-比如你想实现一个编译结束退出命令的插件
-
-```js
-class BuildEndPlugin {
-  apply(compiler) {
-    const afterEmit = (compilation, cb) => {
-      cb()
-      setTimeout(function() {
-        process.exit(0)
-      }, 1000)
-    }
-
-    compiler.plugin('after-emit', afterEmit)
-  }
-}
-
-module.exports = BuildEndPlugin
-```
-
-## 常用发插件
-
-### html-webpack-plugin
-
-构建时 html-webpack-plugin 会为我们创建一个 HTML 文件，其中会引用构建出来的 JS 文件。实际项目中，默认创建的 HTML 文件并没有什么用，我们需要自己来写 HTML 文件，可以通过 html-webpack-plugin 的配置，传递一个写好的 HTML 模板：
-
-```js
 module.exports = {
-  // ...
-  plugins: [
-    new HtmlWebpackPlugin({
-      filename: 'index.html', // 配置输出文件名和路径
-      template: 'assets/index.html' // 配置文件模板
-    })
-  ]
+  module: {
+    rules: [{ test: /\.txt$/, use: 'raw-loader' }]
+  },
+  plugins: [new HtmlWebpackPlugin({ template: './src/index.html' })]
+}
+```
+
+## 原理
+
+webpack 插件是一个具有 apply 方法的 JavaScript 对象。apply 方法会被 webpack compiler 调用，并且 compiler 对象可在整个编译生命周期访问。
+
+## 编写一个插件
+
+一个插件由以下构成
+
+- 一个具名 JavaScript 函数。
+- 在它的原型上定义 apply 方法。
+- 指定一个触及到 webpack 本身的 事件钩子。
+- 操作 webpack 内部的实例特定数据。
+- 在实现功能后调用 webpack 提供的 callback。
+
+```js
+// 一个 JavaScript class
+class MyExampleWebpackPlugin {
+  // 将 `apply` 定义为其原型方法，此方法以 compiler 作为参数
+  apply(compiler) {
+    // 指定要附加到的事件钩子函数
+    compiler.hooks.emit.tapAsync(
+      'MyExampleWebpackPlugin',
+      (compilation, callback) => {
+        console.log('This is an example plugin!')
+        console.log(
+          'Here’s the `compilation` object which represents a single build of assets:',
+          compilation
+        )
+
+        // 使用 webpack 提供的 plugin API 操作构建结果
+        compilation.addModule(/* ... */)
+
+        callback()
+      }
+    )
+  }
 }
 ```
 
 ## 参考
 
+[plugin](https://webpack.docschina.org/concepts/#%E6%8F%92%E4%BB%B6-plugin-)
+
 - [webpack-plugin](https://webpack.docschina.org/concepts/plugins/#%E5%89%96%E6%9E%90)
-- [全面的 Webpack 教程《深入浅出 Webpack》电子书](https://github.com/gwuhaolin/dive-into-webpack/)
-- [探寻 webpack 插件机制](https://www.cnblogs.com/MuYunyun/p/8875908.html)
-- [看清楚真正的 Webpack 插件](https://zoumiaojiang.com/article/what-is-real-webpack-plugin/#compiler)
-- [如何写一个 webpack 插件（一）](https://github.com/lcxfs1991/blog/issues/1)
-- [《深入浅出 Webpack》:5-4 编写 Plugin](http://webpack.wuhaolin.cn/5%E5%8E%9F%E7%90%86/5-4%E7%BC%96%E5%86%99Plugin.html)
+
+- [编写一个插件](https://webpack.docschina.org/contribute/writing-a-plugin/)
+
+- [手写一个 webpack 插件 ](https://github.com/xiangxingchen/blog/issues/18)
