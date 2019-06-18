@@ -23,3 +23,5 @@ setState 的过程
 执行 renderComponent 会重新执行实例的 render
 
 render 函数返回 newVnode, 然后拿到 preVnode
+
+React 中 setState 的执行机制，如何有效的管理状态
