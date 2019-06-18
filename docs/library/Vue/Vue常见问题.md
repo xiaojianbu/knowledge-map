@@ -5,7 +5,7 @@
 1. 每个组件都是 Vue 的实例。
 2. 组件共享 data 属性，当 data 的值是同一个引用类型的值时，改变其中一个会影响其他。
 
-## vue 中的 MVVM 模式 即 Model-View-ViewModel。
+## vue 中的 MVVM 模式 即 Model-View-ViewModel
 
 Vue 是以数据为驱动的，Vue 自身将 DOM 和数据进行绑定，一旦创建绑定，DOM 和数据将保持同步，每当数据发生变化，DOM 会跟着变化。
 ViewModel 是 Vue 的核心，它是 Vue 的一个实例。Vue 实例时作用域某个 HTML 元素上的，这个 HTML 元素可以是 body，也可以是某个 id 所指代的元素。
@@ -13,14 +13,14 @@ DOM Listeners 和 Data Bindings 是实现双向绑定的关键。DOM Listeners �
 Data Bindings 监听 Model 层的数据，当数据发生变化，View 层的 DOM 元素随之变化。
 
 2.v-show 指令，v-if 的区别 条件渲染指令，与 v-if 不同的是，无论 v-show 的值为 true 或 false，元素都会存在于 HTML 代码中；
-而只有当 v-if 的值为 true，元素才会存在于 HTML 代码中。v-show 指令只是设置了元素 CSS 的 style 值
+而只有当 v-if 的值为 true，元素才会存在于 HTML 代码中。v-show 指令只是设置了元素 CSS 的 style 值(是通过 js 代码去修改元素的 element style。如果 value 为 false，设置 display: none；如果 value 为 true，清除 display 属性。所以 value 为 true 时，只是将 element style 中的 display 效果清除，并不能覆盖 css 中的 display 样式)
 
 3.如何让 css 只在当前组件中起作用 在每一个 vue 组件中都可以定义各自的 css，js，如果希望组件内写的 css 只对当前组件起作用，
 只需要在 style 中写入 scoped，即： `<style scoped></style>`
 
 ## vue scoped css
 
-1. 给 HTML 的 dom 节点添加一个不重复的 data 属性(例如: data-v-5558831a)来唯一标识这个 dom 元素
+1. 给 HTML 的 dom 节点添加一个不重复的 data 属性(例如: data-v-5558831a)来唯一标识这个 dom 元素(由 PostCSS 转译实现)
 2. 在每句 css 选择器的末尾(编译后生成的 css 语句)加一个当前组件的 data 属性选择器(例如：[data-v-5558831a])来私有化样式
 
 使用 scoped 后，父组件的样式将不会渗透到子组件中。
@@ -45,32 +45,16 @@ Data Bindings 监听 Model 层的数据，当数据发生变化，View 层的 DO
 }
 ```
 
-## 指令 keep-alive 在 vue-router 写着 keep-alive，
+## 指令 keep-alive 在 vue-router 写着 keep-alive
 
 keep-alive 的含义： 如果把切换出去的组件保留在内存中，可以保留它的状态或避免重新渲染。
 为此可以添加一个 keep-alive 指令 <component :is='curremtView' keep-alive></component>
 
-## Vuejs 组件
-
-vuejs 构建组件使用 Vue.component('componentName',{ /_component_/ })；
-这里注意一点，组件要先注册再使用 Vue.component('mine',{
-template:'#mineTpl',
-props:['name','title','city','content']
-});
-var v=new Vue({
-el:'#vueInstance',
-data:{
-name:'zhang',
-title:'this is title',
-city:'Beijing',
-content:'these are some desc about Blog'
-} });
-
-## 路由嵌套 路由嵌套会将其他组件渲染到该组件内，而不是进行整个页面跳转 router-view 本身就是将组件渲染到该位置，想要进行页面跳转，
+## 路由嵌套 路由嵌套会将其他组件渲染到该组件内，而不是进行整个页面跳转 router-view 本身就是将组件渲染到该位置，想要进行页面跳转
 
 就要将页面渲染到根组件，在起始配置路由时
 
-## vue 根目录下的 index.html 中的 id="app"与 src 目录下的 App.vue 中的 id="app"为什么不会冲突?
+## vue 根目录下的 index.html 中的 id="app"与 src 目录下的 App.vue 中的 id="app"为什么不会冲突
 
 浏览器首先载入 index.html，里面有个 <div id="app"> JS 被加载，开始执行 Vue 实例初始化，根据用户定义，这个实例会被挂载到 #app 这个元素上（也就是 el 属性定义的） 挂载后的元素会替换原先的挂载点，实例模板里怎么定义了根元素，挂载后就是怎么样的元素 你可以看到，其实那个 #app 只是为了能让 Vue 找到确切的挂载位置，它的值是什么其实不重要，也和挂载后的逻辑无关（除非你的业务逻辑里有 document.getElementById('app') 之类的）。
 
@@ -231,8 +215,55 @@ Vue.prototype.$_has = function (value) {
 
 ## vue 中在哪个阶段进行异步请求比较合适
 
-## vue 中 vuex 的 mapSetter 是怎么实现的
+created mounted
+
+## vue 中可以通过 computed 来发起一个 ajax 请求吗
+
+不能
+
+Computed properties should be synchronous.Asynchronous actions inside them may not work as expected and can lead to an unexpected behaviour, that's why you should avoid them. If you need async computed properties you might want to consider using additional plugin [vue-async-computed]
+
+计算属性应该是同步的。其中的异步操作可能无法按预期工作，并可能导致意外行为，这就是您应该避免它们的原因。如果您需要异步计算属性，可能需要考虑使用其他插件[vue-async-computed]
+
+## vue 中 vuex 的 mapGetter 是怎么实现的
 
 ## vue 项目中使用到的优化手段
 
 ## vue 中写一个组件要注意哪些
+
+## vue 组件中的自定义属性如何进行获取
+
+vm.\$options: 用于当前 Vue 实例的初始化选项。需要在选项中包含自定义属性时会有用处
+
+## 指令
+
+```js
+import Vue from 'vue'
+
+/** 权限指令 **/
+Vue.directive('has', {
+  bind: function(el, binding) {
+    if (!Vue.prototype.$_has(binding.value)) {
+      el.parentNode.removeChild(el)
+    }
+  }
+})
+
+// 权限检查方法
+Vue.prototype.$_has = function(value) {
+  let isExist = false
+  // 根据登录后拿到该用户有哪些权限, 这里根据你具体需求
+  let buttonpermsStr = window.sessionStorage.getItem('buttenpremissions')
+  if (buttonpermsStr === undefined || buttonpermsStr === null) {
+    return false
+  }
+  let buttonperms = JSON.parse(buttonpermsStr)
+  for (let i = 0; i < buttonperms.length; i++) {
+    if (buttonperms[i].perms.indexOf(value) > -1) {
+      isExist = true
+      break
+    }
+  }
+  return isExist
+}
+```
