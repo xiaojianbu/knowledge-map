@@ -38,6 +38,20 @@ redux 使用的是不可变的数据，而 vuex 的数据是可变的，redux �
 
 使用 commit 提交到 mutation 修改 state 的优点：vuex 能够记录每一次 state 的变化记录，保存状态快照，实现时间漫游／回滚之类的操作。
 
+## vuex 为什么在 action 中可以异步提交数据再 mutation 中不可以异步提交数据
+
+区分 actions 和 mutations 并不是为了解决竞态问题，而是为了能用 devtools 追踪状态变化。
+
+vuex 真正限制你的只有 mutation 必须是同步的这一点
+
+同步的意义在于这样每一个 mutation 执行完成后都可以对应到一个新的状态
+
+其实就是做了代码隔离
+
+不非受控的代码集中到 action
+
+mutation 只做纯函数的状态改变
+
 ## vuex 缺点是什么
 
 Vuex 与 Vue 深度耦合，致使不能迁移到其他环境下使用
