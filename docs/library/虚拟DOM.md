@@ -1,31 +1,45 @@
 # 虚拟 DOM
 
-用 JS 模拟 DOM 结构
+## Vue 虚拟 DOM
 
-DOM 变化的对比, 放在 JS 层来做
+是一个以 JS 对象为基础的树，用对象属性（例如标签名 tag、属性 attrs、子元素对象 children）来描述节点，描述了应该怎样去创建真实的 DOM 节点，通过 createElement 方法将 VNode 渲染成 dom 节点。
 
-提高重绘性能
+Vue 通过编译将 template 模板转换成渲染函数，执行渲染函数就可以得到一个虚拟节点树
 
-DOM 操作是昂贵的, JS 运行效率高
+在对 Model 进行操作的时候，会触发对应 Dep 中的 Watcher 对象。Watcher 对象会调用对应的 update 来修改视图。这个过程主要是将新旧虚拟节点进行差异化对比，然后根据对比结果进行 DOM 操作来更新视图。
 
-尽量减少 DOM 操作, 而不是 '推倒重来'
+### 虚拟 DOM 的作用
 
-虚拟 DOM 可以解决这个问题
+1. 提供与真实 DOM 节点所对应的虚拟节点
+2. 更新的时候，将虚拟 DOM 与上一次渲染视图的旧虚拟 DOM 进行对比，找出真正需要更新的节点来进行 DOM 操作，从而避免操作其他无需改动的 DOM。
 
-将 DOM 对比操作放在 JS 层, 提高效率
+### 优势
 
-为什么 js 操作 DOM 更消耗资源呢？
+使用 JS 对象模拟 DOM 结构，将 DOM 变化的对比操作放在 JS 层面上来做，提高重绘性能。
 
-## diff 算法
+因为 DOM 操作的执行速度没有 JS 运行效率高，通过 patch 算法来计算出真正需要更新的节点，尽量减少 DOM 操作, 而不是 '推倒重来'，来达到提高性能的目的。
 
-找出本次 DOM 必须更新的节点来更新, 其他的不更新
+### 为什么 js 操作 DOM 更消耗资源呢
 
-通过 JavaScript 来构建虚拟的 DOM 树结构，并将其呈现到页面中；
-当数据改变，引起 DOM 树结构发生改变，从而生成一颗新的虚拟 DOM 树，将其与之前的 DOM 对比，将变化部分应用到真实的 DOM 树中，即页面中。
+操作 DOM 可能会引起重排和重绘
+
+由于 DOM 树的存在，对某一个 DOM 元素的操作可能会影响子节点，兄弟节点甚至是父节点，整棵 DOM 树。
+
+优势在大量、频繁的数据更新下，能够对视图进行合理、高效的更新，这个更新的操作是通过 diff 算法来实现。
+
+### diff 算法
+
+核心是仅在同级的 VNode 间做 diff,递归地进行同级 VNode 的 diff,最终实现整个 DOM 树的更新。
+
+步骤如下：
+
+1. 用 JS 对象结构表示 DOM 树的结构，然后将这个树构建成一个真正的 DOM 树将其呈现到页面中
+2. 当状态变更的时候，重新构造一个新的对象树，然后用新的树和旧的树进行比较，记录两棵树差异
+3. 把所记录的差异应用到所构建的真正的 DOM 树上
+
 通过上面的介绍，下面，我们就来实现一个简单的虚拟 DOM，并将其与真实的 DOM 关联。
 
 ```js
-
 var elem = Element({
   tagName: 'ul',
   props: {'class': 'list'},
@@ -58,16 +72,17 @@ Element.prototype.render = function(){
     propValue;
     for(propName in props){
         propValue = props[propName];
+        // 添加属性
         el.setAttribute(propName, propValue);
     }
     this.children.forEach(function(child){
-    var childEl = null;
-    if(child instanceof Element){
+      var childEl = null;
+      if(child instanceof Element){
         childEl = child.render();
-        }else{
+      }else{
         childEl = document.createTextNode(child);
-        }
-        el.appendChild(childEl);
+      }
+      el.appendChild(childEl);
     });
     return el;
 };
@@ -82,10 +97,6 @@ var elem = Element({
 });
 document.querySelector('body').appendChild(elem.render());
 ```
-
-virtual dom 原理实现
-
-创建 dom 树
 
 树的 diff，同层对比，输出 patchs(listDiff/diffChildren/diffProps)
 
