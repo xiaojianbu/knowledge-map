@@ -267,3 +267,17 @@ Vue.prototype.$_has = function(value) {
   return isExist
 }
 ```
+
+## 从 vue 初始化到页面渲染完成大致都经历了哪些过程
+
+new Vue，执行初始化，将传入的 data 数据绑定到当前实例，这个过程是执行 initData()函数完成的 它会初始化生命周期、事件、 props、 methods、 data、 computed 与 watch 等。其中最重要的是通过 Object.defineProperty 设置 setter 与 getter 函数，用来实现「响应式」以及「依赖收集」。
+
+挂载\$mount 方法，通过自定义 Render 方法、template、el 等生成 Render 函数。当 render function 被渲染的时候，因为会读取所需对象的值，所以会触发 getter 函数进行「依赖收集」，「依赖收集」的目的是将观察者 Watcher 对象存放到当前闭包中的订阅者 Dep 的 subs 中。
+
+通过 Watcher 监听数据的变化
+
+生成 render 函数后，调用\_createElement 函数生成 vnode。
+
+将虚拟 DOM 映射为真实 DOM 页面上。
+
+通过 patch 方法，对比新旧 VNode 对象，通过 DOM Diff 算法，添加、修改、删除真正的 DOM 元素

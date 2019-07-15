@@ -53,8 +53,8 @@ var obj = {
     arguments[0]()
   }
 }
-obj.method(fn)
-obj.method(fn, 123)
+obj.method(fn) // 10 1
+obj.method(fn, 123) // 10 2
 ```
 
 对于 this 的理解，常说的一句话是-- 谁调用它 this 就代表谁
