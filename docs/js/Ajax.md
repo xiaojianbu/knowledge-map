@@ -98,7 +98,7 @@ xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
 xhr.send('firstName=1$lastName=2')
 ```
 
-## 什么情况下 XMLHttpRequest status 会为 0？
+## 什么情况下 XMLHttpRequest status 会为 0
 
 XMLHttpRequest 返回 status 时，会执行以下步骤：
 
@@ -121,7 +121,7 @@ XMLHttpRequest 返回 status 时，会执行以下步骤：
 
 预请求： "预请求" 要求必须先发送一个 OPTIONS 方法请求给目的站点，来查明这个跨站请求对于目的站点是不是安全的可接受的。
 
-## 怎样防止重复发送 AJAX 请求？
+## 怎样防止重复发送 AJAX 请求
 
 disable 按钮
 
