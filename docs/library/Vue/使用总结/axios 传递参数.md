@@ -1,6 +1,6 @@
 # axios 传递参数
 
-在使用 axios 来进行 Ajax 交互的时候需要注意用 get 和 post 方法传递参数的不同。
+在使用 axios 来进行 AJAX 交互的时候需要注意用 get 和 post 方法传递参数的不同。
 
 get 使用 params(添加到 url 的请求字符串中)
 

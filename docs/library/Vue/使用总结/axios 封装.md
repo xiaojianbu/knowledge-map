@@ -15,7 +15,7 @@ const service = axios.create({
 })
 
 service.interceptors.request.use(
-  config => {
+  (config) => {
     if (config.showLoading) {
       showFullScreenLoading()
     }
@@ -26,25 +26,25 @@ service.interceptors.request.use(
     config.params = {
       tokenid,
       set_id,
-      ajax: 'noCache',
+      AJAX: 'noCache',
       ...config.params
     }
 
     return config
   },
-  error => {
+  (error) => {
     Promise.reject(error)
   }
 )
 
 service.interceptors.response.use(
-  response => {
+  (response) => {
     if (response.config.showLoading) {
       tryHideFullScreenLoading()
     }
     return response
   },
-  error => {
+  (error) => {
     tryHideFullScreenLoading()
     Message({
       showClose: true,

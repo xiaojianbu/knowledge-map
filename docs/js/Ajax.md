@@ -2,7 +2,7 @@
 
 ```js
 let xhr = new XMLHttpRequest() // 声明一个请求对象
-xhr.onreadystatechange = function() {
+xhr.onreadystatechange = function () {
   // readyState 代表已向服务器发送请求
   if (xhr.readyState === 4) {
     // status 200 代表服务器返回成功
@@ -82,7 +82,7 @@ xhr.send(optionalEncodedData)
 
 ```js
 let xhr = new XMLHttpRequest()
-xhr.onreadystatechange = function() {
+xhr.onreadystatechange = function () {
   if (xhr.readyState === 4 && xhr.status === 200) {
     doSomething(xhr.responseText)
   }
@@ -125,7 +125,7 @@ XMLHttpRequest 返回 status 时，会执行以下步骤：
 
 disable 按钮
 
-[怎样防止重复发送 Ajax 请求？](https://www.zhihu.com/question/19805411)
+[怎样防止重复发送 AJAX 请求？](https://www.zhihu.com/question/19805411)
 
 ## 来源
 

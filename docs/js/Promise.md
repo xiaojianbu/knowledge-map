@@ -49,12 +49,12 @@ Promise 的 executor 是一个同步函数，即非异步，立即执行的一�
 ```js
 var sequence = Promise.resolve()
 
-urls.forEach(url => {
+urls.forEach((url) => {
   sequence = sequence
     .then(() => {
-      return ajax(url)
+      return AJAX(url)
     })
-    .then(result => {
+    .then((result) => {
       doSomeThing(result)
     })
 })
@@ -62,16 +62,16 @@ urls.forEach(url => {
 urls.reduce((sequence, url) => {
   return sequence
     .then(() => {
-      return ajax(url)
+      return AJAX(url)
     })
-    .then(result => {
+    .then((result) => {
       doSomeThing(result)
     })
 }, Promise.resolve())
 
 async function order(urls) {
-  const promises = urls.map(async url => {
-    const response = await ajax(url)
+  const promises = urls.map(async (url) => {
+    const response = await AJAX(url)
     return response
   })
 
@@ -88,9 +88,9 @@ async function order(urls) {
 不能
 
 ```js
-new Promise(function(resolve, reject) {
+new Promise(function (resolve, reject) {
   Promise.reject('返回一个拒绝状态的Promise')
-}).catch(function(reason) {
+}).catch(function (reason) {
   console.log('catch:', reason)
 })
 ```
@@ -177,7 +177,7 @@ Promise.resolve()
     // 后续的函数不会被调用
     console.log('ok2')
   })
-  .catch(err => {
+  .catch((err) => {
     console.log('err->', err)
   })
 ```
@@ -185,11 +185,11 @@ Promise.resolve()
 ## 实现 Promise.finally
 
 ```js
-Promise.prototype.finally = function(callback) {
+Promise.prototype.finally = function (callback) {
   let P = this.constructor
   return this.then(
-    value => P.resolve(callback()).then(() => value),
-    reason =>
+    (value) => P.resolve(callback()).then(() => value),
+    (reason) =>
       P.resolve(callback()).then(() => {
         throw reason
       })

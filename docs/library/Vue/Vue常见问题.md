@@ -130,7 +130,7 @@ export function currency(value, currency, decimals) {
 import * as filters from './filters'
 
 // 全局过滤器
-Object.keys(filters).forEach(key => {
+Object.keys(filters).forEach((key) => {
   Vue.filter(key, filters[key])
 })
 ```
@@ -185,11 +185,11 @@ import Vue from 'vue'
 
 /** 权限指令 **/
 Vue.directive('has', {
-bind: function (el, binding) {
-if (!Vue.prototype.\$\_has(binding.value)) {
-el.parentNode.removeChild(el)
-}
-}
+  bind: function (el, binding) {
+    if (!Vue.prototype.\$\$\_has(binding.value)) {
+      el.parentNode.removeChild(el)
+    }
+  }
 })
 
 // 权限检查方法
@@ -217,7 +217,7 @@ Vue.prototype.$_has = function (value) {
 
 created mounted
 
-## vue 中可以通过 computed 来发起一个 ajax 请求吗
+## vue 中可以通过 computed 来发起一个 AJAX 请求吗
 
 不能
 
@@ -242,7 +242,7 @@ import Vue from 'vue'
 
 /** 权限指令 **/
 Vue.directive('has', {
-  bind: function(el, binding) {
+  bind: function (el, binding) {
     if (!Vue.prototype.$_has(binding.value)) {
       el.parentNode.removeChild(el)
     }
@@ -250,7 +250,7 @@ Vue.directive('has', {
 })
 
 // 权限检查方法
-Vue.prototype.$_has = function(value) {
+Vue.prototype.$_has = function (value) {
   let isExist = false
   // 根据登录后拿到该用户有哪些权限, 这里根据你具体需求
   let buttonpermsStr = window.sessionStorage.getItem('buttenpremissions')

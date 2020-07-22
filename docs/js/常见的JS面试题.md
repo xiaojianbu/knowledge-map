@@ -48,7 +48,7 @@ function fn() {
 }
 var obj = {
   length: 5,
-  method: function(fn) {
+  method: function (fn) {
     fn()
     arguments[0]()
   }
@@ -194,19 +194,19 @@ function isEmptyObject(obj) {
 
 ```js
 var object1 = {
-  valueOf: function() {
+  valueOf: function () {
     return 1
   },
-  toString: function() {
+  toString: function () {
     return 'object1'
   }
 }
 
 var object2 = {
-  valueOf: function() {
+  valueOf: function () {
     return 2
   },
-  toString: function() {
+  toString: function () {
     return 'object2'
   }
 }
@@ -269,7 +269,7 @@ function obj2CamelCased(obj) {
   for (var prop in obj) {
     if (obj.hasOwnProperty(prop)) {
       //推荐在 for in 时，总是使用 hasOwnProperty 进行判断，没人可以保证运行的代码环境是否被污染过。
-      var camelProp = prop.replace(/_([a-z])/g, function(g) {
+      var camelProp = prop.replace(/_([a-z])/g, function (g) {
         return g[1].toUpperCase()
       })
       if (obj[prop] instanceof Array) {
@@ -299,9 +299,9 @@ function obj2CamelCased(obj) {
 export function multiFilter(array, filters) {
   const filterKeys = Object.keys(filters)
   // filters all elements passing the criteria
-  return array.filter(item => {
+  return array.filter((item) => {
     // dynamically validate all filter criteria
-    return filterKeys.every(key => {
+    return filterKeys.every((key) => {
       //ignore when the filter is empty Anne
       if (!filters[key].length) return true
       return !!~filters[key].indexOf(item[key])
@@ -339,10 +339,10 @@ get(obj, 'selector.to.toutiao', 'target[0]', 'target[2].name')
 ```js
 function get(data, ...args) {
   const reg = /\[[0-9]+\]/gi
-  return args.map(item => {
+  return args.map((item) => {
     const paths = item.split('.')
     let res = data
-    paths.map(path => {
+    paths.map((path) => {
       try {
         if (reg.test(path)) {
           const match = path.match(reg)[0]
@@ -365,7 +365,7 @@ function get(data, ...args) {
 ```js
 function get(data, ...args) {
   const res = JSON.stringify(data)
-  return args.map(item =>
+  return args.map((item) =>
     new Function(`try {return ${res}.${item} } catch(e) {}`)()
   )
 }
@@ -379,7 +379,7 @@ console.log(
   get(obj, 'selector.to.toutiao', 'target[0]', 'target[2].name', 'asd')
 )
 function get(data, ...args) {
-  return args.map(item =>
+  return args.map((item) =>
     new Function('data', `try {return data.${item} } catch(e) {}`)(data)
   )
 }
@@ -415,12 +415,12 @@ function render() {
 // 注：requestAnimFrame 和 定时器一样也头一个类似的清除方法 cancelAnimationFrame。
 
 // 兼容性处理
-window.requestAnimFrame = (function() {
+window.requestAnimFrame = (function () {
   return (
     window.requestAnimationFrame ||
     window.webkitRequestAnimationFrame ||
     window.mozRequestAnimationFrame ||
-    function(callback) {
+    function (callback) {
       window.setTimeout(callback, 1000 / 60)
     }
   )
@@ -457,13 +457,13 @@ function render() {
 const resultObj = {}
 let arr = ['codeZh', 'codeCn', 'taobao.cn', 'taobao.com']
 
-let arrSplit = arr.map(item =>
+let arrSplit = arr.map((item) =>
   item.indexOf('.') !== -1
     ? item.replace(/(\.)/g, ',$1').split(',')
     : item.replace(/([A-Z])+/g, ',$1').split(',')
 )
 
-let arrGroup = arrSplit.map(item => ({
+let arrGroup = arrSplit.map((item) => ({
   [item[0]]: { [item[1]]: item.join('') }
 }))
 
@@ -498,7 +498,7 @@ console.log(result)
  * @returns {String} newVariable
  */
 // 利用String.prototype.replace()
-const toCamelCaseVar = variable =>
+const toCamelCaseVar = (variable) =>
   variable.replace(/_+[a-zA-Z]/g, (m, i) => {
     if (i) {
       return m.match(/[a-zA-Z]/)[0].toUpperCase()
@@ -534,8 +534,8 @@ const toCamelCaseVar = variable =>
  * @param {Object} data
  * @returns {Array}
  */
-const parseData = data =>
-  data.rows.map(item => {
+const parseData = (data) =>
+  data.rows.map((item) => {
     const obj = {}
     for (let i = 0, len = item.length; i < len; i++) {
       obj[data.metaData[i].name] = item[i]
@@ -554,9 +554,9 @@ function Node(id) {
   this.children = [] // array
 }
 
-Node.prototype.getChild = function(id) {
+Node.prototype.getChild = function (id) {
   var node
-  this.children.some(function(n) {
+  this.children.some(function (n) {
     if (n.id === id) {
       node = n
       return true
@@ -568,9 +568,9 @@ Node.prototype.getChild = function(id) {
 var path = ['A-->B-->C-->D-->E', 'A-->B-->C-->D-->F', 'A-->F-->C-->D-->E'],
   tree = new Node('root')
 
-path.forEach(function(a) {
+path.forEach(function (a) {
   var parts = a.split('-->')
-  parts.reduce(function(r, b) {
+  parts.reduce(function (r, b) {
     var node = r.getChild(b)
     if (!node) {
       node = new Node(b)
@@ -590,9 +590,9 @@ function Node(id) {
 var path = ['A-->B-->C-->D-->E', 'A-->B-->C-->D-->F', 'A-->F-->C-->D-->E'],
   tree = new Node('root')
 
-path.forEach(function(a) {
+path.forEach(function (a) {
   var parts = a.split('-->')
-  parts.reduce(function(r, b) {
+  parts.reduce(function (r, b) {
     if (!r.children[b]) {
       r.children[b] = new Node(b)
     }
@@ -621,15 +621,15 @@ console.log(tree)
 要点：字母一个接一个地旋转。Tokyo matches only with: okyoT, kyoTo, yoTok, oToky.
 
 ```js
-const getWordRotations = word =>
+const getWordRotations = (word) =>
   [...word].reduce(
-    acc => [acc[0].substring(1) + acc[0].substring(0, 1), ...acc],
+    (acc) => [acc[0].substring(1) + acc[0].substring(0, 1), ...acc],
     [word]
   )
 
-const groupCitiesByRotatedNames = cities =>
+const groupCitiesByRotatedNames = (cities) =>
   cities.reduce((acc, city) => {
-    const cityGroup = acc.find(item =>
+    const cityGroup = acc.find((item) =>
       getWordRotations(city.toLowerCase()).includes(item[0].toLowerCase())
     )
 
@@ -673,7 +673,7 @@ console.log('test', test)
 方法 1 需要注意的是，字符串“ad”和“bc”的 Unicode 编码和是一样的，此时需要多加一个判断，检测任意一个字符串中的第一个字符是否有出现在另一个字符串中出现过即可。
 
 ```js
-let stringClassify = function(arr) {
+let stringClassify = function (arr) {
   let arrLength = arr.length
   let obj = {}
   let name
@@ -707,7 +707,7 @@ let stringClassify = function(arr) {
 方法 2 是将字符串转换成数组后再对数组进行 sort 排序，abcd 和 bdca 使用 sort 排序后会变成 abcd，将拍好序的字符串作为对象的 key 来保存排序一致的字符串。
 
 ```js
-let stringClassify = function() {
+let stringClassify = function () {
   let arrLength = arr.length
   let obj = {}
   for (let i = 0; i < arrLength; i++) {
@@ -741,7 +741,7 @@ if (Array.prototype.equals) {
 }
 
 // attach the .equals method to Array's prototype to call it on any array
-Array.prototype.equals = function(array) {
+Array.prototype.equals = function (array) {
   // if the other array is a falsy value, return
   if (!array) return false
 
@@ -765,7 +765,7 @@ Object.defineProperty(Array.prototype, 'equals', { enumerable: false })
 ```
 
 ```js
-Object.prototype.equals = function(object2) {
+Object.prototype.equals = function (object2) {
   //For the first loop, we only check for types
   for (propName in this) {
     //Check for inherited methods and properties - like .equals itself
@@ -863,7 +863,7 @@ const s2 = '8100824045303269669937'
 function strToArrRvs(str) {
   return str
     .split('')
-    .map(x => +x)
+    .map((x) => +x)
     .reverse()
 }
 
@@ -887,10 +887,8 @@ addStr('712569312664357328695151392', '8100824045303269669937')
 ```
 
 ```js
-String.prototype.reverse = function() {
-  return this.split('')
-    .reverse()
-    .join('')
+String.prototype.reverse = function () {
+  return this.split('').reverse().join('')
 }
 function sumStrings(a, b) {
   a = a.reverse()
@@ -1025,18 +1023,18 @@ function Traverse(p_element, p_callback) {
 
 ```javascript
 function Foo() {
-  getName = function() {
+  getName = function () {
     alert(1)
   }
   return this
 }
-Foo.getName = function() {
+Foo.getName = function () {
   alert(2)
 }
-Foo.prototype.getName = function() {
+Foo.prototype.getName = function () {
   alert(3)
 }
-var getName = function() {
+var getName = function () {
   alert(4)
 }
 function getName() {
@@ -1055,7 +1053,7 @@ new new Foo().getName() //3
 ```js
 // 代码编译后如下
 function Foo() {
-  getName = function() {
+  getName = function () {
     console.log(1)
   }
   return this
@@ -1064,13 +1062,13 @@ function getName() {
   console.log(5)
 } //函数优先(函数首先被提升)
 var getName //重复声明，被忽略
-Foo.getName = function() {
+Foo.getName = function () {
   console.log(2)
 }
-Foo.prototype.getName = function() {
+Foo.prototype.getName = function () {
   console.log(3)
 }
-getName = function() {
+getName = function () {
   console.log(4)
 }
 ```
@@ -1097,7 +1095,7 @@ getName = function() {
 1. 分时函数
 2. requestAnimationFrame
 
-## 10 个 Ajax 同时发起请求，全部返回展示结果，并且至多允许三次失败，说出设计思路
+## 10 个 AJAX 同时发起请求，全部返回展示结果，并且至多允许三次失败，说出设计思路
 
 ```javascript
 // Promise 写法
@@ -1115,7 +1113,7 @@ let p = new Promise((resolve, reject) => {
     }
   }
 })
-Promise.all([p]).then(v => {
+Promise.all([p]).then((v) => {
   console.log(v)
 })
 ```
@@ -1339,7 +1337,7 @@ function exchange(num) {
     return num
   }
 
-  num = num.replace(/\d{1,3}(?=(\d{3})+$)/g, v => {
+  num = num.replace(/\d{1,3}(?=(\d{3})+$)/g, (v) => {
     console.log(v)
     return v + ','
   })
@@ -1371,10 +1369,10 @@ console.log(exchange(1234567))
 ### 需要通过 threshold 参数控制调用函数频率
 
 ```js
-const yourFunction = function(func, threshold) {
+const yourFunction = function (func, threshold) {
   // 请实现
 }
-const triggerSearch = yourFunction(val => {
+const triggerSearch = yourFunction((val) => {
   const { onSearch } = this.props
   onSearch(val)
 }, 300)
@@ -1418,10 +1416,10 @@ console.dir(destructuringArray(targetArray, formaterArray))
 
 // 第二题
 
-const yourFunction = function(func, threshold) {
+const yourFunction = function (func, threshold) {
   let timeOut
 
-  return function() {
+  return function () {
     if (!timeOut) {
       timeOut = setTimeout(() => {
         timeOut = null
@@ -1432,7 +1430,7 @@ const yourFunction = function(func, threshold) {
   }
 }
 
-const triggerSearch = yourFunction(val => {
+const triggerSearch = yourFunction((val) => {
   const { onSearch } = this.props
 
   onSearch(val)
@@ -1515,25 +1513,25 @@ function ShowStayTime(obj) {
 }
 ShowStayTime.prototype = {
   constructor: ShowStayTime,
-  init: function() {
+  init: function () {
     this.showStayTime()
     this.obj.appendChild(this.divTime)
     this.beginTime()
     this.leaveTime()
   },
-  showStayTime: function() {
+  showStayTime: function () {
     var message = ''
     message = '停留时间' + this.totalTime + 'ms'
     this.divTime.innerText = message
   },
-  beginTime: function() {
-    this.obj.addEventListener('mouseenter', function() {
+  beginTime: function () {
+    this.obj.addEventListener('mouseenter', function () {
       this.enterTime = new Date()
     })
   },
-  leaveTime: function() {
+  leaveTime: function () {
     var temp = this
-    this.obj.addEventListener('mouseleave', function() {
+    this.obj.addEventListener('mouseleave', function () {
       temp.totalTime += new Date().getTime() - this.enterTime.getTime()
       temp.showStayTime()
     })
@@ -1564,7 +1562,7 @@ Q: 这些方法为什么会传入函数作为参数，你有想过如何实现�
 
 ## es5 实现 const
 
-## ajax 和 axios 的不同
+## AJAX 和 axios 的不同
 
 ## 什么是尾递归
 
@@ -1601,7 +1599,7 @@ requestAnimationFrame 才有的是系统时间间隔，保持最佳绘制效率�
 ```js
 function test() {
   var a = [...arguments][0]
-  return function() {
+  return function () {
     var b = [...arguments][0]
     if (b > 0) {
       return a + b
@@ -1615,10 +1613,7 @@ function test() {
 ## 实现链式调用
 
 ```js
-coder
-  .sleep()
-  .print1()
-  .print2()
+coder.sleep().print1().print2()
 class Coder {
   sleep() {
     console.log('sleep')
@@ -1657,9 +1652,7 @@ class Coder {
   }
 }
 var b = new Coder()
-b.sleep()
-  .print1()
-  .print2()
+b.sleep().print1().print2()
 ```
 
 ## 实现一个 div 滑动的动画，由快至慢 5s 结束（不准用 css3)。
@@ -1682,7 +1675,7 @@ const sendRequest = (urls, max, callback) => {
           finished += 1
           handler()
         })
-        .catch(e => {
+        .catch((e) => {
           throw Error(e)
         })
     }
@@ -1696,8 +1689,8 @@ const sendRequest = (urls, max, callback) => {
 }
 const urls = Array.from({ length: 10 }, (v, k) => k)
 
-const fetch = function(idx) {
-  return new Promise(resolve => {
+const fetch = function (idx) {
+  return new Promise((resolve) => {
     console.log(`start request ${idx}`)
     const timeout = parseInt(Math.random() * 1e4)
     setTimeout(() => {
@@ -1769,7 +1762,7 @@ sendRequest(urls, max, callback)
       }
     }
     if (numArr.length > 0) {
-      numArr.forEach(function(item, j) {
+      numArr.forEach(function (item, j) {
         result += item * Math.pow(radix, numArr.length - j - 1)
       })
     }
@@ -1878,7 +1871,7 @@ class Person {
       console.log(str)
     } else {
       this.list.splice(1, 0, () => {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
           setTimeout(() => {
             console.log(str)
             resolve()
@@ -1896,7 +1889,7 @@ class Person {
   }
   do(type) {
     this.list.push(() => {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         setTimeout(() => {
           console.log(`${this.name} ${type}`)
           resolve()
@@ -1907,7 +1900,7 @@ class Person {
   }
   wait(num) {
     this.list.push(() => {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         setTimeout(() => {
           console.log(`wait ${num}s`)
           resolve()
@@ -1919,7 +1912,7 @@ class Person {
   waitFirst(num) {
     this.list.pop()
     this.list.unshift(() => {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         setTimeout(() => {
           console.log(`wait ${num}s`)
           resolve()
@@ -1934,7 +1927,7 @@ function machine(name) {
 }
 
 const defer = (time, callback) => {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(() => {
       resolve(callback())
     }, time * 1000)
