@@ -1,5 +1,7 @@
 # setState
 
+isBatchUpdate true: 则压入执行队列，异步；false：拿出执行队列一起执行，同步
+
 setState 的异步
 
 Vue 修改属性也是异步
@@ -25,3 +27,7 @@ setState 的过程
 render 函数返回 newVnode, 然后拿到 preVnode
 
 React 中 setState 的执行机制，如何有效的管理状态
+
+## 回调函数作为 setState（）的参数的目的是什么
+
+setState() 的第二个参数为可选的回调函数，它将在 setState 完成合并并重新渲染组件后执行。通常，我们建议使用 componentDidUpdate() 来代替此方式。
