@@ -6,3 +6,27 @@
 - map: 只能遍历数组，不能中断，返回值是修改后的数组。
 
 Object.keys()：返回给定对象所有可枚举属性的字符串数组。
+
+```js
+//
+
+var iterable = {
+  [Symbol.iterator]() {
+    return {
+      i: 0,
+      next() {
+        if (this.i < 3) {
+          return { value: this.i++, done: false }
+        }
+        return { value: undefined, done: true }
+      }
+    }
+  }
+}
+for (var value of iterable) {
+  console.log(value)
+}
+// 0
+// 1
+// 2
+```

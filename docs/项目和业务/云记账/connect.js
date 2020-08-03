@@ -31,7 +31,7 @@ export default (mapState, mapDispatch = {}, effectArr = []) => {
         }
       })
 
-      return <Component {...props} dispatch={dispatch} {...effectsProps} />
+      return <Component {...props} dispatch={myDispatch} {...effectsProps} />
     }
 
     return connect(mapState, mapDispatch)(NewComponent)

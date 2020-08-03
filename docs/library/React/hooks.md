@@ -2,6 +2,10 @@
 
 React 本质是一个 UI Library,并不是框架，React 本身不解决应用中的数据流问题，父子组件之间状态共享一直没有成熟的解决方案(minix -> HOC -> hooks)
 
+mount 阶段 单链表
+
+update 阶段 循环链表
+
 ## 优点
 
 更容易复用代码
@@ -29,24 +33,16 @@ React 本质是一个 UI Library,并不是框架，React 本身不解决应用�
 
 这绝对是最大的缺点。函数的运行是独立的，每个函数都有一份独立的作用域。函数的变量是保存在运行时的作用域里面，当我们有异步操作的时候，经常会碰到异步回调的变量引用是之前的
 
-mount 阶段 单链表
-
-update 阶段 循环链表
-
-在 hooks 中每一次 render 都有自己的 state 和 props
-
-useMemo 与 useCallback 的区别
+## useMemo 与 useCallback 的区别
 
 - useCallback: 一般用于缓存函数
 - useMemo: 一般用于缓存组件
 
-常用的有哪些？都有什么作用？
+闭包、缓存、memorize
 
-如何使用 hook 在依赖改变的时候重新发送请求？
+## useEffect 和 useLayoutEffect 有什么区别
 
-写过自定义 hook 吗？解决了哪些问题。
-
-讲讲 React Hooks 的闭包陷阱，你是怎么解决的？
+简单来说就是调用时机不同，useLayoutEffect 和原来 componentDidMount&componentDidUpdate 一致，在 react 完成 DOM 更新后马上同步调用的代码，会阻塞页面渲染。而 useEffect 是会在整个页面渲染完才会调用的代码。
 
 ## class 组件和 function 组件对比
 
@@ -66,13 +62,23 @@ hooks 将所有类似生命周期函数都可以用一个 useEffect 来进行模
 - 性能, 需要额外的组件实例存在额外的开销; (hoc、render props)
 - 命名重复性, 在一个组件中同时使用多个 hoc, 不排除这些 hoc 里的方法存在命名冲突的问题; (hoc)
 
-## hooks 解决了什么问题
-
 ## 与 HOC、render props 比较
 
-## hooks 缺点
+其实组件逻辑复用在 React 中是经历了很长的一段发展历程的， mixin -> HOC & render-props -> Hook
 
-## 闭包陷阱
+mixin 是 React 中最早启用的一种逻辑复用方式，因为它的缺点是
+
+1. React 中使用 ES6 class 时，将不支持 mixins
+2. Mixins 将会修改 state，所以开发者无法直接的确定 state 来自哪里
+3. 如果使用多个 Mixins 时，他们设定或修改 state 将会造成命名冲突
+
+HOC & render-props 增加组件嵌套啊、props 来源不明确，HOC 可能会在预期的 prop 名称上发生冲突。
+
+Hook 是相对完美的一种方案
+
+1. 暴露给模板的属性具有明确的来源，因为它们是从 Hook 函数返回的值。
+2. Hook 函数返回的值可以任意命名，因此不会发生名称空间冲突。
+3. 没有创建仅用于逻辑重用的不必要的组件实例。
 
 ## useRef 不刷新问题
 
@@ -83,10 +89,6 @@ hooks 将所有类似生命周期函数都可以用一个 useEffect 来进行模
 ## 一个很牛逼很多功能的 class 组件，里面有业务生命周期（获取数据前后、弹出窗口前后...），怎么在函数组件里面直接复用它
 
 先注入到函数组件的 props，再到 useEffect 关键节点里面执行业务生命周期
-
-## useMemo
-
-闭包、缓存、memorize
 
 ## useState 和 useEffect 简单实现
 
@@ -131,7 +133,9 @@ var React = (function () {
     useEffect(callback, deps) {
       const ifUpdate = !deps
       // 判断 Deps 中的依赖是否改变
-      const ifDepsChange = _deps ? !_deps.every((r, index) => r === deps[index]) : true
+      const ifDepsChange = _deps
+        ? !_deps.every((r, index) => r === deps[index])
+        : true
       if (ifUpdate || ifDepsChange) {
         callback()
         _deps = deps || []
@@ -140,7 +144,7 @@ var React = (function () {
   }
 })()
 
-var {useState, useEffect} = React
+var { useState, useEffect } = React
 function Counter() {
   const [count, setCount] = useState(0)
   useEffect(() => {
@@ -149,7 +153,7 @@ function Counter() {
   return {
     render: () => console.log('render', count),
     click: () => setCount(count + 1),
-    noop: () => setCount(count), // 保持不变, 观察 useEffect 是否被调用
+    noop: () => setCount(count) // 保持不变, 观察 useEffect 是否被调用
   }
 }
 Counter().render() // 'useEffect' 0, 'render', 0
@@ -160,7 +164,7 @@ Counter().render() // 'useEffect' 1, 'render', 1
 
 // 处理多次调用的情形
 // 为了在 hooks 中能使用多次 useState, useEffect, 将各个 useState, useEffect 的调用存进一个数组中, 在上面基础上进行如下改造:
-const React = (function() {
+const React = (function () {
   const hooks = []
   let currentHook = 0
   return {
@@ -180,7 +184,9 @@ const React = (function() {
     useEffect(callback, deps) {
       const ifUpdate = !deps
       // 判断 Deps 中的依赖是否改变
-      const ifDepsChange = hooks[currentHook] ? !hooks[currentHook].every((r, index) => r === deps[index]) : true
+      const ifDepsChange = hooks[currentHook]
+        ? !hooks[currentHook].every((r, index) => r === deps[index])
+        : true
       if (ifUpdate || ifDepsChange) {
         callback()
         hooks[currentHook++] = deps || []
@@ -189,7 +195,7 @@ const React = (function() {
   }
 })()
 
-var {useState, useEffect} = React
+var { useState, useEffect } = React
 function Counter() {
   const [count, setCount] = useState(0)
   const [type, setType] = useState('hi')
@@ -200,7 +206,7 @@ function Counter() {
   return {
     render: () => console.log('render', count),
     click: () => setCount(count + 1),
-    noop: () => setCount(count), // 保持不变, 观察 useEffect 是否被调用
+    noop: () => setCount(count) // 保持不变, 观察 useEffect 是否被调用
   }
 }
 /* 如下 mock 执行了 useEffect、render; 这里使用 React.render 的原因是为了重置 currentHook 的值 */

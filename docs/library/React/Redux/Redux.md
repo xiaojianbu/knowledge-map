@@ -1,5 +1,15 @@
 # Redux
 
+## 三大原则
+
+单一数据源
+
+State 是只读的
+
+使用纯函数来执行修改
+
+## 图解
+
 Redux 单向性的数据流
 
 Store — 数据存储中心，同时连接着 Actions 和 Views（React Components）
@@ -14,11 +24,7 @@ Store — 数据存储中心，同时连接着 Actions 和 Views（React Compone
 
 每一个 Store 实例都提供一个 subscribe 方法，Views 只需要调用该方法注册一个回调（内含 setState 操作），之后在每次 dispatch(action)时，该回调都会被触发，从而实现重新渲染；对于最新的 Store 数据，可以通过 Store 实例提供的另一个方法 getState 来获取
 
-Actions、Action Creators、以及 Views。
-
-Reducers 和 Middlewares
-
-Reducer
+### Reducer
 
 Reducer 是一个纯函数，用来修改 Store 数据的。接收一个旧的 prevState，返回一个新的 nextState。
 
@@ -31,7 +37,7 @@ Reducer 修改数据的好处：
 
 通过定义多个 reducer 对数据进行拆解访问或者修改，最终再通过 combineReducers 函数将零散的数据拼装回去
 
-Middleware
+### Middleware 中间件机制
 
 中间件讲究的是对数据的流式处理，在 Redux 中，Middlerwares 要处理的对象则是：Action。
 
@@ -39,21 +45,25 @@ Middleware
 
 标准的 action 应该是一个 plain object，但是对于中间件而言，action 还可以是函数，也可以是 promise 对象，或者一个带有特殊含义字段的对象，但不管怎样，因为中间件会对特定类型 action 做一定的转换，所以最后传给 reducer 的 action 一定是标准的 plain object。
 
-react-redux
+## react-redux
 
 react-redux 主要暴露出两个 api：
 
 1. Provider 组件
 2. connect 方法
 
-Provider
+### Provider
 
 Provider 存在的意义在于：想通过 context 的方式将唯一的数据源 store 传递给任意想访问的子孙组件。
 
-connect
+### connect
 
 Redux 中的 connect 方法，跟 Reflux.connect 方法有点类似，最主要的目的就是：让 Component 与 Store 进行关联，即 Store 的数据变化可以及时通知 Views 重新渲染。
 
-Redux-Saga
+connect 怎么实现
+
+高阶组件、context 注入 store、subscribe 订阅 store 数据变化
+
+### Redux-Saga
 
 以 Redux 中间件 的形式而存在，主要是为了更优雅地 管理 Redux 应用程序中的 副作用（Side Effects）。
